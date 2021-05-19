@@ -6,24 +6,25 @@ const webKeyboard = (function(){
 	let isDown=false;
 	window.oscillators={};
 	let localGains={};
+	let pointers_target={};
 	let stopEvent=function(event){
 		event.stopPropagation();
 		event.preventDefault();
 		// return false;
 	}
-	let filterScroll=function(event){
-		if(isDown){
-			stopEvent(event)
-			return false;
-		}
-		let target = event.target;
-		console.log(event.type,event);
+	// let filterScroll=function(event){
+	// 	if(isDown){
+	// 		stopEvent(event)
+	// 		return false;
+	// 	}
+	// 	let target = event.target;
+	// 	console.log(event.type,event);
 
-		if(target.classList.contains('kb-key')){
-			stopEvent(event)
-			return false;
-		}
-	}
+	// 	if(target.classList.contains('kb-key')){
+	// 		stopEvent(event)
+	// 		return false;
+	// 	}
+	// }
 	let moveKey=function(event){
 		// console.log(event.type);
 		if(!isDown){
@@ -33,9 +34,6 @@ const webKeyboard = (function(){
 		if(!target){
 			return
 		}
-		if(target.classList.contains('on')){
-			return;
-		}
 		if(!target.classList.contains('kb-key')){
 			return;
 		}
@@ -44,6 +42,15 @@ const webKeyboard = (function(){
 		}catch(e){
 			console.log(e);
 		}
+		// console.log(event);
+
+		if(pointers_target[event.pointerId] === target){
+			return;
+		}
+		if(pointers_target[event.pointerId]){
+			stopKey(pointers_target[event.pointerId]);
+		}
+		pointers_target[event.pointerId] = target;
 		playKey(target);		
 		return false;
 	}
@@ -51,11 +58,11 @@ const webKeyboard = (function(){
 		isDown = false;
 		console.log(event.type);
 		stopKey(event.target);
+		delete pointers_target[event.pointerId];
 	}
 	let downKey=function(event){
 		isDown = true;
 		// console.log(event.type);
-		// console.log(event);
 		let target = event.target;
 		if(!target.classList.contains('kb-key')){
 			return;
@@ -65,16 +72,18 @@ const webKeyboard = (function(){
 		}catch(e){
 			console.log(e);
 		}
-		playKey(target);		
+		pointers_target[event.pointerId] = target;
+		playKey(target);
+		
 		return false;
 	}
 	let playKey = function(node){
 		if(node.timerOn){
 			clearTimeout(node.timerOn);
 		}
-		node.timerOn = setTimeout(function(){
-			node.classList.remove('on');
-		},1000)
+		// node.timerOn = setTimeout(function(){
+		// 	node.classList.remove('on');
+		// },500)
 		node.classList.add('on');
 		let code = node.dataset.key+node.dataset.half+node.dataset.tone;
 		node.osc = playTone(code,webKeyboard.wave,webKeyboard.sustain);
@@ -90,7 +99,7 @@ const webKeyboard = (function(){
 		let code = node.dataset.key+node.dataset.half+node.dataset.tone;
 		// stopTone(code,0.5);
 		if(node.osc){
-			stopOsc(node.osc,webKeyboard.sustain/10);
+			stopOsc(node.osc,0.3); //사람의 반응속도를 300ms 라고 가정
 		}
 	}
 	let eventOption = {
@@ -104,7 +113,7 @@ const webKeyboard = (function(){
 		document.addEventListener('pointerdown',downKey,eventOption);
 		document.addEventListener('pointerup',upKey,eventOption);
 		document.addEventListener('pointermove',moveKey,eventOption);
-		document.querySelector('.keyboard').addEventListener('scroll',filterScroll,eventOption);
+		// document.querySelector('.keyboard').addEventListener('scroll',filterScroll,eventOption);
 		// document.addEventListener('touchmove',moveKey,eventOption);
 		
 	}
@@ -163,14 +172,11 @@ const webKeyboard = (function(){
 			return
 		}
 		if(osc.timmer){clearTimeout(osc.timmer)}
-		// osc.localGain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + sec)
+		if(osc.localGain)osc.localGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + sec)
 		osc.stop(audioCtx.currentTime + sec)
-		osc.localGain.disconnect();
-		osc.disconnect();
-		delete osc.localGain;
 		console.log('stopTone',osc.frequency.value,sec);
 	}
-	let playTone = function(code,wave,sec) {
+	let playTone = function(code,wave,sutain) {
 		if(!audioCtx){
 			console.warn("start audio?");
 			return
@@ -191,17 +197,31 @@ const webKeyboard = (function(){
 		}
 		osc.frequency.value = freq;
 		osc.localGain = localGain;
+		osc.sutain = sutain;
 		osc.code = code;
 		localGain.gain.value = 1;
-		osc.start();
+
+		osc.onended = function(event){
+			// console.log('onended');
+			let osc = this
+			if(osc.localGain){
+				osc.localGain.disconnect();
+				delete osc.localGain;
+			}
+			osc.disconnect();
+			osc = null;
+		}
 		
 
+		localGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + sutain)
+		osc.start();
+		// osc.stop(audioCtx.currentTime + sutain);
 		osc.timmer = setTimeout(() => {
-			stopOsc(osc,sec);
-		}, sec*1000);
-		localGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + sec)
-		osc.stop(audioCtx.currentTime + sec);
-		console.log('playTone',code,osc.frequency.value,osc.type,audioCtx.currentTime + sec);
+			stopOsc(osc,sutain/5);
+		}, sutain*1000);
+
+
+		console.log('playTone',code,osc.frequency.value,osc.type,audioCtx.currentTime + sutain);
 		return osc;
 	}
 
