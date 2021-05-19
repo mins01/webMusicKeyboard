@@ -4,6 +4,8 @@ const webKeyboard = (function(){
 	let audioCtx=null;
 	let gainNode=null;
 	let isDown=false;
+	window.oscillators={};
+	let localGains={};
 	let stopEvent=function(event){
 		event.stopPropagation();
 		event.preventDefault();
@@ -48,6 +50,7 @@ const webKeyboard = (function(){
 	let upKey=function(event){
 		isDown = false;
 		console.log(event.type);
+		stopKey(event.target);
 	}
 	let downKey=function(event){
 		isDown = true;
@@ -69,15 +72,31 @@ const webKeyboard = (function(){
 		if(node.timerOn){
 			clearTimeout(node.timerOn);
 		}
-		node.classList.add('on');
 		node.timerOn = setTimeout(function(){
 			node.classList.remove('on');
-		},300)
+		},500)
+		node.classList.add('on');
+		let code = node.dataset.key+node.dataset.half+node.dataset.tone;
+		let res = playTone(code,webKeyboard.wave,webKeyboard.sustain);
+		if(res){
+			node.osc =res.osc;
+			node.localGain =res.localGain;
+		}
+		
+	}
+	let stopKey = function(node){
+		if(node.timerOn){
+			clearTimeout(node.timerOn);
+		}
+		node.classList.remove('on');
 
 		let code = node.dataset.key+node.dataset.half+node.dataset.tone;
-		let freq = webKeyboard.codeTable[code];
-		if(!freq){ return; }
-		playTone(freq,webKeyboard.wave,webKeyboard.sustain);
+		// stopTone(code,0.5);
+		if(node.osc){
+			stopOsc(node.osc,node.localGain,0.5);
+			delete node.osc;
+			delete node.localGain;
+		}
 	}
 	let eventOption = {
 		capture: false,
@@ -143,27 +162,47 @@ const webKeyboard = (function(){
 		}
 		
 	}
-	let playTone = function(freq,wave,sec) {
+	let stopOsc = function(osc,localGain,sec){
 		if(!audioCtx){
 			console.warn("start audio?");
 			return
 		}
-		let localGainNode = audioCtx.createGain();
-		localGainNode.connect(gainNode);
-		let osc = audioCtx.createOscillator();
-		osc.connect(localGainNode);
+		
+		localGain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + sec)
+		osc.stop(audioCtx.currentTime + sec)
+		console.log('stopTone',osc.frequency.value,sec);
+	}
+	let playTone = function(code,wave,sec) {
+		if(!audioCtx){
+			console.warn("start audio?");
+			return
+		}
+		let osc , localGain;
+		localGain = audioCtx.createGain();
+		localGain.connect(gainNode);		
+		osc = audioCtx.createOscillator();
+		osc.connect(localGain);
+		// console.log(osc);
+		let freq = webKeyboard.codeTable[code];
+		if(!freq){ return; }
+		
 		if(typeof wave =='string'){
 			osc.type = wave;
 		}else{
 			osc.setPeriodicWave(wave);
 		}
 		osc.frequency.value = freq;
-		// localGainNode.gain.value = 0.3 // 10 %
-		localGainNode.gain.value = 1;
-		localGainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + sec)
+		// localGain.gain.value = 0.3 // 10 %
+		localGain.gain.value = 1;
 		osc.start();
-		osc.stop(audioCtx.currentTime + sec);
-		console.log('playTone',osc.frequency.value,osc.type,audioCtx.currentTime + sec);
+
+		setTimeout(() => {
+			stopOsc(osc,localGain,sec);
+		}, sec);
+		// localGain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + sec)
+		// osc.stop(audioCtx.currentTime + sec);
+		console.log('playTone',code,osc.frequency.value,osc.type,audioCtx.currentTime + sec);
+		return {osc:osc,localGain:localGain};
 	}
 
 	let webKeyboard = {
