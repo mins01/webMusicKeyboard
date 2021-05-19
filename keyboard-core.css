@@ -80,6 +80,9 @@ body {
 .kb-key::before{
 	content: attr(data-key)attr(data-half);
 }
+.kb-key[data-key="C"]::before{
+	content: attr(data-key)attr(data-half)attr(data-tone);
+}
 
 .kb-octave-normal .kb-pos{
 	flex: 2 0 auto;
@@ -103,25 +106,6 @@ body {
 	pointer-events: none !important;
 	height:0px !important;
 }
-/* .kb-octave-half .kb-pos:nth-child(8n+1) ,
-.kb-octave-half .kb-pos:nth-child(8n+8){
-	flex: 1 0 0;
-	
-}
-.kb-octave-half .kb-pos:nth-child(8n+1) ,
-.kb-octave-half .kb-pos:nth-child(8n+4) ,
-.kb-octave-half .kb-pos:nth-child(8n+8){
-	visibility: hidden;
-	pointer-events: none;
-	height:0px;
-}
-.kb-octave-half .kb-pos-last{
-	flex:2 0 0 !important;
-} */
-.kb-pos-none{
-	display: none !important;
-}
-
 .kb-key{
 	word-break: break-all;
 	display: flex;
