@@ -7,20 +7,20 @@ const webKeyboard = (function(){
 	let stopEvent=function(event){
 		event.stopPropagation();
 		event.preventDefault();
-		return false;
+		// return false;
 	}
-
-	let upKey=function(event){
-		isDown = false;
-		console.log(event.type);
-	}
-	let downKey=function(event){
-		isDown = true;
-		console.log(event.type);
-		// console.log(event);
-		let target = event.target;
-		
-		
+	let moveKey=function(event){
+		// console.log(event.type);
+		if(!isDown){
+			return;
+		}
+		let target = document.elementFromPoint(event.clientX, event.clientY); //touchmove인 경우 target 변경 안된다.
+		if(!target){
+			return
+		}
+		if(target.classList.contains('on')){
+			return;
+		}
 		if(!target.classList.contains('kb-key')){
 			return;
 		}
@@ -29,8 +29,27 @@ const webKeyboard = (function(){
 		}catch(e){
 			console.log(e);
 		}
-		playKey(target);
-		
+		playKey(target);		
+		return false;
+	}
+	let upKey=function(event){
+		isDown = false;
+		console.log(event.type);
+	}
+	let downKey=function(event){
+		isDown = true;
+		// console.log(event.type);
+		// console.log(event);
+		let target = event.target;
+		if(!target.classList.contains('kb-key')){
+			return;
+		}
+		try{
+			stopEvent(event)
+		}catch(e){
+			console.log(e);
+		}
+		playKey(target);		
 		return false;
 	}
 	let playKey = function(node){
@@ -40,12 +59,11 @@ const webKeyboard = (function(){
 		node.classList.add('on');
 		node.timerOn = setTimeout(function(){
 			node.classList.remove('on');
-		},1000)
+		},300)
 
 		let code = node.dataset.key+node.dataset.half+node.dataset.tone;
 		let freq = webKeyboard.codeTable[code];
-		if(!freq){			return;
-		}
+		if(!freq){ return; }
 		playTone(freq,webKeyboard.wave,webKeyboard.sustain);
 	}
 	let eventOption = {
@@ -58,6 +76,9 @@ const webKeyboard = (function(){
 		// document.addEventListener('touchstart',downKey,eventOption)
 		document.addEventListener('pointerdown',downKey,eventOption);
 		document.addEventListener('pointerup',upKey,eventOption);
+		document.addEventListener('pointermove',moveKey,eventOption);
+		// document.addEventListener('touchmove',moveKey,eventOption);
+		
 	}
 	
 	let startAudio = function(off){
@@ -109,8 +130,6 @@ const webKeyboard = (function(){
 		
 	}
 	let playTone = function(freq,wave,sec) {
-		// console.log('playTone',freq,wave,sec);
-		// startAudio();
 		if(!audioCtx){
 			console.warn("start audio?");
 			return
@@ -121,14 +140,12 @@ const webKeyboard = (function(){
 		osc.connect(localGainNode);
 		if(typeof wave =='string'){
 			osc.type = wave;
-
 		}else{
 			osc.setPeriodicWave(wave);
-
-			// console.log(wave);
 		}
 		osc.frequency.value = freq;
 		// localGainNode.gain.value = 0.3 // 10 %
+		localGainNode.gain.value = 1;
 		localGainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + sec)
 		osc.start();
 		osc.stop(audioCtx.currentTime + sec);

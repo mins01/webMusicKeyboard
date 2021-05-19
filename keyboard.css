@@ -2,8 +2,8 @@
 /* prevent pull-down-to-refresh of mobile chrome */
 html,
 body {
-    overscroll-behavior-y: contain;
-	
+	overscroll-behavior-y: contain;
+	touch-action:none
 }
 
 .keyboard-container{
@@ -38,11 +38,9 @@ body {
 
 
 .kb-octave{
-	/* min-width: 210px; */
 	margin:0px 0px;
-	/* height:100%; */
+	padding: 0px;
 	position: relative;
-	/* border: 1px solid #ccc;; */
 }
 /* .kb-octave::after{
 	content:attr(data-tone);
