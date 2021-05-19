@@ -109,7 +109,7 @@ const webKeyboard = (function(){
 		
 	}
 	let playTone = function(freq,wave,sec) {
-		console.log('playTone',freq,sec);
+		// console.log('playTone',freq,wave,sec);
 		// startAudio();
 		if(!audioCtx){
 			console.warn("start audio?");
@@ -120,7 +120,7 @@ const webKeyboard = (function(){
 		let osc = audioCtx.createOscillator();
 		osc.connect(localGainNode);
 		if(typeof wave =='string'){
-			osc.wave = wave;
+			osc.type = wave;
 
 		}else{
 			osc.setPeriodicWave(wave);
@@ -132,6 +132,7 @@ const webKeyboard = (function(){
 		localGainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + sec)
 		osc.start();
 		osc.stop(audioCtx.currentTime + sec);
+		console.log('playTone',osc.frequency.value,osc.type,audioCtx.currentTime + sec);
 	}
 
 	let webKeyboard = {
