@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ko" >
+<head>
+	<title>web keyboard</title>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Script-Type" content="text/javascript">
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="shortcut icon" href="http://www.mins01.com/favicon.ico">	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	
+	<script src="/js/ForGoogle.js"></script>
+	<!-- google analytics -->
+	<script>ForGoogle.analytics()</script>
+	
+	
+	<!-- jquery 관련 -->
+	<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"  ></script>
+	
+	<!-- 부트스트랩 4 : IE8지원안됨! -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous"> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script> 
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" crossorigin="anonymous"></script>
+	<!-- vue.js -->
+	<!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+	
+	<!-- meta og -->
+	
+	<meta property="og:title" content="web keyboard">
+	<meta property="og:description" content="web keyboard">
+	<meta name="og:image" content="http://www.mins01.com/img/logo.gif">
+	<meta property="og:image:width" content="190">
+	<meta property="og:image:height" content="70" />
+	<meta property="og:site_name" content="web keyboard" />
+	<meta property="og:type" content="website">
+	
+	<meta name="mobile-web-app-capable" content="yes">
+
+	<!-- //meta og -->
+
+	<link rel="stylesheet" href="keyboard.css"> 
+	<script src="notevalues.js"></script>
+	<script src="waveTables.js"></script>
+	
+	<script src="webKeyboard.js"></script>
+	<script>
+		window.onload = function(){
+			webKeyboard.codeTable = noteValues; 
+			webKeyboard.waveTables = waveTables; 
+			webKeyboard.init()
+			let w_wave = document.querySelector("#wave-custom");
+			for(var k in webKeyboard.waveTables){
+				w_wave.append(new Option(k,k,false,false))
+			}
+		}
+	</script>
+	
+</head>
+<body>
+	<!-- <div class="container">
+		<h3 class="text-center">keyboard</h3>
+	</div> -->
+	<div class="container">
+		<div class="keyboard-container">
+			<header class="keyboard-header">
+				<form  action="#" onsubmit="return false;" style="vertical-align: middle;">
+					<button type="button" class="btn-startAudio btn btn-info btn-sm btn-parwnt-width" data-on="0" onclick="webKeyboard.startAudio(this.dataset.on=='1');this.dataset.on=this.dataset.on=='0'?'1':'0';" ></button>
+					<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.setGainValue(parseFloat(this.value))" style="padding:0">
+						<optgroup label="volume">
+							<option value="0">0%</option>
+							<option value="0.1">10%</option>
+							<option value="0.2">20%</option>
+							<option value="0.3">30%</option>
+							<option value="0.4">40%</option>
+							<option value="0.5" selected>50%</option>
+							<option value="0.6">60%</option>
+							<option value="0.7">70%</option>
+							<option value="0.8">80%</option>
+							<option value="0.9">90%</option>
+							<option value="1">100%</option>
+						</optgroup>
+					</select>
+					<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.setWave(this.value)" style="padding:0" id="webKeyboard-wave">
+						<optgroup label="wave-default">
+							<option value="sine">sine</option>
+							<option value="square" selected>square</option>
+							<option value="sawtooth">sawtooth</option>
+							<option value="triangle">triangle</option>
+							
+						</optgroup>
+						<optgroup label="wave-custom" id="wave-custom">
+							
+						</optgroup>
+					</select>
+					
+					<label class="btn btn-info btn-sm btn-parwnt-width"><input name="sustain" type="radio" value="1" onclick="webKeyboard.sustain=parseFloat(this.value)"> 1</label>
+					<label class="btn btn-info btn-sm btn-parwnt-width"><input name="sustain" type="radio" value="3" onclick="webKeyboard.sustain=parseFloat(this.value)"  checked> 3</label>
+					<label class="btn btn-info btn-sm btn-parwnt-width"><input name="sustain" type="radio" value="5" onclick="webKeyboard.sustain=parseFloat(this.value)"> 5</label>
+					<label class="btn btn-info btn-sm btn-parwnt-width"><input name="sustain" type="radio" value="5" onclick="webKeyboard.sustain=parseFloat(this.value)"> 7</label>
+					<label class="btn btn-info btn-sm btn-parwnt-width"><input name="sustain" type="radio" value="5" onclick="webKeyboard.sustain=parseFloat(this.value)"> 10</label>
+				</form>
+				
+			</header>
+			<div class="keyboard">
+				<div class="kb-octave" data-tone="7">
+					<div class="kb-octave-normal">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-10" data-key="C" data-half="" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-20" data-key="D" data-half="" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-30" data-key="E" data-half="" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-40" data-key="F" data-half="" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-50" data-key="G" data-half="" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-60" data-key="A" data-half="" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-70" data-key="B" data-half="" data-tone="7" ></div></div>
+					</div>
+					<div class="kb-octave-half">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-05" data-key="E" data-half="#" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-15" data-key="C" data-half="#" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-25" data-key="D" data-half="#" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-35" data-key="E" data-half="#" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-45" data-key="F" data-half="#" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-55" data-key="G" data-half="#" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-65" data-key="A" data-half="#" data-tone="7" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-75" data-key="E" data-half="#" data-tone="7" ></div></div>
+					</div>
+				</div>
+				<div class="kb-octave" data-tone="6">
+					<div class="kb-octave-normal">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-10" data-key="C" data-half="" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-20" data-key="D" data-half="" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-30" data-key="E" data-half="" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-40" data-key="F" data-half="" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-50" data-key="G" data-half="" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-60" data-key="A" data-half="" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-70" data-key="B" data-half="" data-tone="6" ></div></div>
+					</div>
+					<div class="kb-octave-half">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-05" data-key="E" data-half="#" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-15" data-key="C" data-half="#" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-25" data-key="D" data-half="#" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-35" data-key="E" data-half="#" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-45" data-key="F" data-half="#" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-55" data-key="G" data-half="#" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-65" data-key="A" data-half="#" data-tone="6" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-75" data-key="E" data-half="#" data-tone="6" ></div></div>
+					</div>
+				</div>
+				<div class="kb-octave" data-tone="5">
+					<div class="kb-octave-normal">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-10" data-key="C" data-half="" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-20" data-key="D" data-half="" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-30" data-key="E" data-half="" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-40" data-key="F" data-half="" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-50" data-key="G" data-half="" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-60" data-key="A" data-half="" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-70" data-key="B" data-half="" data-tone="5" ></div></div>
+					</div>
+					<div class="kb-octave-half">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-05" data-key="E" data-half="#" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-15" data-key="C" data-half="#" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-25" data-key="D" data-half="#" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-35" data-key="E" data-half="#" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-45" data-key="F" data-half="#" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-55" data-key="G" data-half="#" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-65" data-key="A" data-half="#" data-tone="5" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-75" data-key="E" data-half="#" data-tone="5" ></div></div>
+					</div>
+				</div>
+				<div class="kb-octave" data-tone="4">
+					<div class="kb-octave-normal">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-10" data-key="C" data-half="" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-20" data-key="D" data-half="" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-30" data-key="E" data-half="" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-40" data-key="F" data-half="" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-50" data-key="G" data-half="" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-60" data-key="A" data-half="" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-70" data-key="B" data-half="" data-tone="4" ></div></div>
+					</div>
+					<div class="kb-octave-half">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-05" data-key="E" data-half="#" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-15" data-key="C" data-half="#" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-25" data-key="D" data-half="#" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-35" data-key="E" data-half="#" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-45" data-key="F" data-half="#" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-55" data-key="G" data-half="#" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-65" data-key="A" data-half="#" data-tone="4" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-75" data-key="E" data-half="#" data-tone="4" ></div></div>
+					</div>
+				</div>
+				<div class="kb-octave" data-tone="3">
+					<div class="kb-octave-normal">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-10" data-key="C" data-half="" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-20" data-key="D" data-half="" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-30" data-key="E" data-half="" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-40" data-key="F" data-half="" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-50" data-key="G" data-half="" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-60" data-key="A" data-half="" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-70" data-key="B" data-half="" data-tone="3" ></div></div>
+					</div>
+					<div class="kb-octave-half">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-05" data-key="E" data-half="#" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-15" data-key="C" data-half="#" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-25" data-key="D" data-half="#" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-35" data-key="E" data-half="#" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-45" data-key="F" data-half="#" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-55" data-key="G" data-half="#" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-65" data-key="A" data-half="#" data-tone="3" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-75" data-key="E" data-half="#" data-tone="3" ></div></div>
+					</div>
+				</div>
+				<div class="kb-octave" data-tone="2">
+					<div class="kb-octave-normal">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-10" data-key="C" data-half="" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-20" data-key="D" data-half="" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-30" data-key="E" data-half="" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-40" data-key="F" data-half="" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-50" data-key="G" data-half="" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-60" data-key="A" data-half="" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-70" data-key="B" data-half="" data-tone="2" ></div></div>
+					</div>
+					<div class="kb-octave-half">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-05" data-key="E" data-half="#" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-15" data-key="C" data-half="#" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-25" data-key="D" data-half="#" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-35" data-key="E" data-half="#" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-45" data-key="F" data-half="#" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-55" data-key="G" data-half="#" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-65" data-key="A" data-half="#" data-tone="2" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-75" data-key="E" data-half="#" data-tone="2" ></div></div>
+					</div>
+				</div>
+				<div class="kb-octave" data-tone="1">
+					<div class="kb-octave-normal">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-10" data-key="C" data-half="" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-20" data-key="D" data-half="" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-30" data-key="E" data-half="" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-40" data-key="F" data-half="" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-50" data-key="G" data-half="" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-60" data-key="A" data-half="" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-70" data-key="B" data-half="" data-tone="1" ></div></div>
+					</div>
+					<div class="kb-octave-half">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-05" data-key="E" data-half="#" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-15" data-key="C" data-half="#" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-25" data-key="D" data-half="#" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-35" data-key="E" data-half="#" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-45" data-key="F" data-half="#" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-55" data-key="G" data-half="#" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-65" data-key="A" data-half="#" data-tone="1" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-75" data-key="E" data-half="#" data-tone="1" ></div></div>
+					</div>
+				</div>
+				<div class="kb-octave" data-tone="0">
+					<div class="kb-octave-normal">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-10" data-key="C" data-half="" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-20" data-key="D" data-half="" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-30" data-key="E" data-half="" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-40" data-key="F" data-half="" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-50" data-key="G" data-half="" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-60" data-key="A" data-half="" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-70" data-key="B" data-half="" data-tone="0" ></div></div>
+					</div>
+					<div class="kb-octave-half">
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-05" data-key="E" data-half="#" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-15" data-key="C" data-half="#" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-25" data-key="D" data-half="#" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-35" data-key="E" data-half="#" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-45" data-key="F" data-half="#" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-55" data-key="G" data-half="#" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-65" data-key="A" data-half="#" data-tone="0" ></div></div>
+						<div class="kb-pos"><div draggable="false" class="kb-key kb-key-75" data-key="E" data-half="#" data-tone="0" ></div></div>
+					</div>
+				</div>
+		</div>
+		
+			
+		</div>
+	</div>
+	<!-- 공대여자는 예쁘다. -->
+</body>
+</html>

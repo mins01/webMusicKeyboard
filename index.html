@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ko" >
+<head>
+	<title>AudioContext</title>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Script-Type" content="text/javascript">
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="shortcut icon" href="http://www.mins01.com/favicon.ico">	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<script src="/js/ForGoogle.js"></script>
+	<!-- google analytics -->
+	<script>ForGoogle.analytics()</script>
+	
+	
+	<!-- jquery 관련 -->
+	<!-- <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script> -->
+	
+	<!-- 부트스트랩 4 : IE8지원안됨! -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous"> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script> 
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" crossorigin="anonymous"></script>
+	<!-- vue.js -->
+	<!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+	
+	<!-- meta og -->
+	
+	<meta property="og:title" content="AudioContext">
+	<meta property="og:description" content="AudioContext">
+	<meta name="og:image" content="http://www.mins01.com/img/logo.gif">
+	<meta property="og:image:width" content="190">
+	<meta property="og:image:height" content="70" />
+	<meta property="og:site_name" content="AudioContext" />
+	<meta property="og:type" content="website">
+	
+	<!-- //meta og -->
+	<script src="notevalues.js"></script>
+	
+</head>
+<body>
+	<div class="container">
+		<ul class="list-group">
+			<li class="list-group-item"><a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/AudioContext">https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/AudioContext</a></li>
+			<li class="list-group-item"><a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioNode/connect">https://developer.mozilla.org/en-US/docs/Web/API/AudioNode/connect</a></li>
+			<li class="list-group-item"><a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Simple_synth">https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Simple_synth</a></li>
+			<li class="list-group-item"><a href="https://juo6442.github.io/translate/2018/06/02/generate-sounds-programmatically-with-javascript.html">https://juo6442.github.io/translate/2018/06/02/generate-sounds-programmatically-with-javascript.html</a></li>
+			<li class="list-group-item"><a href="https://mins01.github.io/web_work_doc/HTML5/AudioContext/keyboard.html">https://mins01.github.io/web_work_doc/HTML5/AudioContext/keyboard.html</a></li>
+			<li class="list-group-item"><a href="https://github.com/GoogleChromeLabs/web-audio-samples/tree/main/archive/demos/wave-tables">https://github.com/GoogleChromeLabs/web-audio-samples/tree/main/archive/demos/wave-tables</a></li>			
+		</ul>
+		<script>
+			var audioCtx = null;
+			var gainNode = null;
+			var oscillator = null;
+			
+			window.onload = function() {
+	
+			}
+			
+			
+			
+			
+			function btn_start(event){
+				if(!audioCtx){
+					audioCtx = new AudioContext({
+						latencyHint: 'interactive',
+						sampleRate: 44100,
+					});
+					gainNode = audioCtx.createGain()
+					gainNode.gain.value = 0.1 // 10 %
+					gainNode.connect(audioCtx.destination);
+				}
+				
+				// oscillator = audioCtx.createOscillator();
+				// oscillator.frequency.value = 130.81; 
+				// // oscillator.frequency.setValueAtTime(16.35, audioCtx.currentTime); // value in hertz
+				// oscillator.type = 'sins'
+				// // oscillator.type = 'square';
+
+
+				// audioCtx.resume().then(() => {
+				// 	oscillator.start();	
+				// 	console.log('Playback resumed successfully');
+				// });
+				// oscillator.connect(gainNode)
+				
+				// lfo.start();
+			}
+			function btn_stop(event){
+				oscillator.disconnect(gainNode)
+				// oscillator.stop();	
+				// gainNode.disconnect(audioCtx.destination);
+				// lfo.stop();
+			}
+
+			function playTone(freq) {
+				btn_start(event);
+				let localGainNode = audioCtx.createGain();
+				localGainNode.connect(gainNode);
+				osc = audioCtx.createOscillator();
+				osc.connect(localGainNode);
+
+				osc.type ='square';
+				osc.frequency.value = freq;
+				// localGainNode.gain.value = 0.3 // 10 %
+				localGainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 3)
+				osc.start();
+				return osc;
+			}
+		</script>
+		<button onclick="btn_start(event)" class="btn btn-info">start</button>
+		<button onclick="btn_stop(event)" class="btn btn-info">stop</button>
+	</div>
+	<div id="keyboard">
+		
+	</div>
+	<script>
+		let keyboard = document.querySelector("#keyboard");
+		let keys = [];
+		//noteValues
+		for(let key in noteValues){
+			let freq = noteValues[key];
+			let btn = document.createElement('button');
+			
+			btn.innerText = key;
+			btn.freq = freq;
+			btn.key = key;
+			btn.setAttribute("data-freq",freq);
+			btn.setAttribute("data-key",key);
+			btn.onmousedown = function(event){
+				event.preventDefault()
+				if(this.osc){ this.osc.stop(); delete this.osc }
+				this.osc = playTone(this.freq);
+			}
+			btn.onmouseup = function(event){
+				event.preventDefault()
+				// if(this.osc) this.osc.stop();
+				// delete this.osc;
+			}
+			btn.ontouchstart = function(event){
+				event.preventDefault()
+				if(this.osc){ this.osc.stop(); delete this.osc }
+				this.osc = playTone(this.freq);
+			}
+			btn.ontouchend = function(event){
+				event.preventDefault()
+				// if(this.osc) this.osc.stop();
+				// delete this.osc;
+			}
+			keyboard.append(btn);
+		}
+	</script>
+</body>
+</html>
