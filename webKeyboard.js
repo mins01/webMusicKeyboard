@@ -9,6 +9,19 @@ const webKeyboard = (function(){
 		event.preventDefault();
 		// return false;
 	}
+	let filterScroll=function(event){
+		if(isDown){
+			stopEvent(event)
+			return false;
+		}
+		let target = event.target;
+		console.log(event.type,event);
+
+		if(target.classList.contains('kb-key')){
+			stopEvent(event)
+			return false;
+		}
+	}
 	let moveKey=function(event){
 		// console.log(event.type);
 		if(!isDown){
@@ -77,6 +90,7 @@ const webKeyboard = (function(){
 		document.addEventListener('pointerdown',downKey,eventOption);
 		document.addEventListener('pointerup',upKey,eventOption);
 		document.addEventListener('pointermove',moveKey,eventOption);
+		document.querySelector('.keyboard').addEventListener('scroll',filterScroll,eventOption);
 		// document.addEventListener('touchmove',moveKey,eventOption);
 		
 	}
