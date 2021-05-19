@@ -1,2 +1,2 @@
-# webKeyboard
-use web audio
+# webMusicKeyboard
+web music keyboard
