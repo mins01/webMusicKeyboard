@@ -56,8 +56,12 @@ const webKeyboard = (function(){
 	}
 	let upKey=function(event){
 		isDown = false;
+		let target = document.elementFromPoint(event.clientX, event.clientY); //touchmove인 경우 target 변경 안된다.
+
 		console.log(event.type);
+		stopKey(target);
 		stopKey(event.target);
+		if(pointers_target[event.pointerId]) stopKey(pointers_target[event.pointerId]);
 		delete pointers_target[event.pointerId];
 	}
 	let downKey=function(event){
@@ -89,7 +93,10 @@ const webKeyboard = (function(){
 		node.osc = playTone(code,webKeyboard.wave,webKeyboard.sustain);
 	}
 	let stopKey = function(node){
-		if(node.timerOn){
+		if(!node.classList.contains('kb-key')){
+			return;
+		}
+		if(!!node.timerOn){
 			clearTimeout(node.timerOn);
 		}
 		node.timerOn = setTimeout(function(){
