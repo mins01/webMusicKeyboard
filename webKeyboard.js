@@ -74,28 +74,23 @@ const webKeyboard = (function(){
 		}
 		node.timerOn = setTimeout(function(){
 			node.classList.remove('on');
-		},500)
+		},1000)
 		node.classList.add('on');
 		let code = node.dataset.key+node.dataset.half+node.dataset.tone;
-		let res = playTone(code,webKeyboard.wave,webKeyboard.sustain);
-		if(res){
-			node.osc =res.osc;
-			node.localGain =res.localGain;
-		}
-		
+		node.osc = playTone(code,webKeyboard.wave,webKeyboard.sustain);
 	}
 	let stopKey = function(node){
 		if(node.timerOn){
 			clearTimeout(node.timerOn);
 		}
-		node.classList.remove('on');
+		node.timerOn = setTimeout(function(){
+			node.classList.remove('on');
+		},500)
 
 		let code = node.dataset.key+node.dataset.half+node.dataset.tone;
 		// stopTone(code,0.5);
 		if(node.osc){
-			stopOsc(node.osc,node.localGain,0.5);
-			delete node.osc;
-			delete node.localGain;
+			stopOsc(node.osc,webKeyboard.sustain/10);
 		}
 	}
 	let eventOption = {
@@ -162,14 +157,17 @@ const webKeyboard = (function(){
 		}
 		
 	}
-	let stopOsc = function(osc,localGain,sec){
+	let stopOsc = function(osc,sec){
 		if(!audioCtx){
 			console.warn("start audio?");
 			return
 		}
-		
-		localGain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + sec)
+		if(osc.timmer){clearTimeout(osc.timmer)}
+		// osc.localGain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + sec)
 		osc.stop(audioCtx.currentTime + sec)
+		osc.localGain.disconnect();
+		osc.disconnect();
+		delete osc.localGain;
 		console.log('stopTone',osc.frequency.value,sec);
 	}
 	let playTone = function(code,wave,sec) {
@@ -192,17 +190,19 @@ const webKeyboard = (function(){
 			osc.setPeriodicWave(wave);
 		}
 		osc.frequency.value = freq;
-		// localGain.gain.value = 0.3 // 10 %
+		osc.localGain = localGain;
+		osc.code = code;
 		localGain.gain.value = 1;
 		osc.start();
+		
 
-		setTimeout(() => {
-			stopOsc(osc,localGain,sec);
-		}, sec);
-		// localGain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + sec)
-		// osc.stop(audioCtx.currentTime + sec);
+		osc.timmer = setTimeout(() => {
+			stopOsc(osc,sec);
+		}, sec*1000);
+		localGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + sec)
+		osc.stop(audioCtx.currentTime + sec);
 		console.log('playTone',code,osc.frequency.value,osc.type,audioCtx.currentTime + sec);
-		return {osc:osc,localGain:localGain};
+		return osc;
 	}
 
 	let webKeyboard = {
