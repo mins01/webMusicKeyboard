@@ -128,6 +128,7 @@ const webKeyboard = (function(){
 	
 	let startAudio = function(off){
 		if(!audioCtx){
+			let AudioContext = window.AudioContext || window.webkitAudioContext;
 			audioCtx = new AudioContext({
 				latencyHint: 'interactive',
 				sampleRate: 44100,
