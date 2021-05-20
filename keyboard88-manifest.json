@@ -1,0 +1,18 @@
+{
+	"name": "web music keyboard 88",
+	"short_name": "keyboard88",
+	"start_url": "./keyboard88.html",
+	"display": "fullscreen",
+	"orientation": "landscape-primary",
+	"background_color": "#fff",
+	"description": "A simply web music keyboard. (key 88)",
+	"icons": [{
+	  "src": "webMusicKeboard88.png",
+	  "sizes": "96x96",
+	  "type": "image/png"
+	}],
+	"related_applications": [{
+	  "platform": "github",
+	  "url": "https://mins01.github.io/webMusicKeyboard/keyboard88.html"
+	}]
+  }
