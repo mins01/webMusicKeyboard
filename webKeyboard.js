@@ -10,33 +10,18 @@ const webKeyboard = (function(){
 	let stopEvent=function(event){
 		event.stopPropagation();
 		event.preventDefault();
-		// return false;
 	}
-	// let filterScroll=function(event){
-	// 	if(isDown){
-	// 		stopEvent(event)
-	// 		return false;
-	// 	}
-	// 	let target = event.target;
-	// 	console.log(event.type,event);
-
-	// 	if(target.classList.contains('kb-key')){
-	// 		stopEvent(event)
-	// 		return false;
-	// 	}
-	// }
 	let moveKey=function(event){
-		// console.log(event.type);
+		// console.log(event);
 		if(!isDown){
 			return;
 		}
 		let target = document.elementFromPoint(event.clientX, event.clientY); //touchmove인 경우 target 변경 안된다.
-		if(!target){
+		if(!target || !target.classList.contains('kb-key')){
+			if(pointers_target[event.pointerId]) stopKey(pointers_target[event.pointerId]);
 			return
 		}
-		if(!target.classList.contains('kb-key')){
-			return;
-		}
+		
 		try{
 			stopEvent(event)
 		}catch(e){
@@ -44,14 +29,14 @@ const webKeyboard = (function(){
 		}
 		// console.log(event);
 
-		if(pointers_target[event.pointerId] === target){
-			return;
+		if(pointers_target[event.pointerId] === target) return;
+		if(pointers_target[event.pointerId]) stopKey(pointers_target[event.pointerId]);
+		if(target){
+			pointers_target[event.pointerId] = target;
+			playKey(target);		
+		}else{
+			console.log('out');
 		}
-		if(pointers_target[event.pointerId]){
-			stopKey(pointers_target[event.pointerId]);
-		}
-		pointers_target[event.pointerId] = target;
-		playKey(target);		
 		return false;
 	}
 	let upKey=function(event){
@@ -59,8 +44,8 @@ const webKeyboard = (function(){
 		let target = document.elementFromPoint(event.clientX, event.clientY); //touchmove인 경우 target 변경 안된다.
 
 		console.log(event.type);
-		stopKey(target);
-		stopKey(event.target);
+		if(target) stopKey(target);
+		if(event.target) stopKey(event.target);
 		if(pointers_target[event.pointerId]) stopKey(pointers_target[event.pointerId]);
 		delete pointers_target[event.pointerId];
 	}
