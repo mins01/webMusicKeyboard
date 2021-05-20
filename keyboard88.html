@@ -95,12 +95,62 @@
 						</optgroup>
 					</select>
 					<div style="white-space: nowrap; display: inline-block;">
-						<label class="btn btn-info btn-sm btn-parwnt-width"><input name="sustain" type="radio" value="0.5" onclick="webKeyboard.sustain=parseFloat(this.value)"> 0.5</label>
-						<label class="btn btn-info btn-sm btn-parwnt-width"><input name="sustain" type="radio" value="1" onclick="webKeyboard.sustain=parseFloat(this.value)"> 1</label>
-						<label class="btn btn-info btn-sm btn-parwnt-width"><input name="sustain" type="radio" value="2" onclick="webKeyboard.sustain=parseFloat(this.value)"> 2</label>
-						<label class="btn btn-info btn-sm btn-parwnt-width"><input name="sustain" type="radio" value="3" onclick="webKeyboard.sustain=parseFloat(this.value)" checked> 3</label>
-						<label class="btn btn-info btn-sm btn-parwnt-width"><input name="sustain" type="radio" value="4" onclick="webKeyboard.sustain=parseFloat(this.value)"> 4</label>
-						<label class="btn btn-info btn-sm btn-parwnt-width"><input name="sustain" type="radio" value="5" onclick="webKeyboard.sustain=parseFloat(this.value)"> 5</label>
+						<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.envelope.attack=parseFloat(this.value)" style="padding:0">
+							<optgroup label="attack sec">
+								<option value="0.0">0.0</option>
+								<option value="0.1" selected>0.1</option>
+								<option value="0.3">0.3</option>
+								<option value="0.5">0.5</option>
+								<option value="0.7">0.7</option>
+								<option value="1.0">1.0</option>
+								<option value="3.0">3.0</option>
+								<option value="5.0">5.0</option>
+								<option value="7.0">7.0</option>
+							</optgroup>
+						</select>
+	
+						<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.envelope.decay=parseFloat(this.value)" style="padding:0">
+							<optgroup label="decay sec">
+								<option value="0.0">0.0</option>
+								<option value="0.1" selected>0.1</option>
+								<option value="0.3">0.3</option>
+								<option value="0.5">0.5</option>
+								<option value="0.7">0.7</option>
+								<option value="1.0">1.0</option>
+								<option value="3.0">3.0</option>
+								<option value="5.0">5.0</option>
+								<option value="7.0">7.0</option>
+							</optgroup>
+						</select>
+						
+						<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.envelope.sustain=parseFloat(this.value)" style="padding:0">
+							<optgroup label="sustain sec">
+								<option value="-1">infinite</option>
+								<option value="0.0">0.0</option>
+								<option value="0.1">0.1</option>
+								<option value="0.3">0.3</option>
+								<option value="0.5">0.5</option>
+								<option value="0.7">0.7</option>
+								<option value="1.0" selected>1.0</option>
+								<option value="3.0">3.0</option>
+								<option value="5.0">5.0</option>
+								<option value="7.0">7.0</option>
+							</optgroup>
+						</select>
+						
+						<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.envelope.release=parseFloat(this.value)" style="padding:0">
+							<optgroup label="release sec">
+								<option value="0.0">0.0</option>
+								<option value="0.1" selected>0.1</option>
+								<option value="0.3">0.3</option>
+								<option value="0.5">0.5</option>
+								<option value="0.7">0.7</option>
+								<option value="1.0">1.0</option>
+								<option value="3.0">3.0</option>
+								<option value="5.0">5.0</option>
+								<option value="7.0">7.0</option>
+							</optgroup>
+						</select>
 					</div>
 					
 				</form>
