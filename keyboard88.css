@@ -1,10 +1,10 @@
 @charset "utf-8";
 
-.btn-parwnt-width.btn ,
+/* .btn-parwnt-width.btn ,
 .btn-parwnt-width.form-control{
 	width:auto;
 	min-width:40px;
-}
+} */
 .keyboard-container{
 	display: flex;
 	flex-direction: column;
@@ -38,4 +38,15 @@
 	height:70%;
 	min-height: 10vh;
 	max-height: 80vh;
+}
+
+.flex-box{
+	display: flex;
+	flex-wrap: nowrap;
+	justify-content: space-evenly;
+}
+
+.flex-box > *{
+	flex: 1 1 auto;
+	min-width: 2em;
 }

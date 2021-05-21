@@ -66,36 +66,38 @@
 	<div class="container">
 		<div class="keyboard-container">
 			<header class="keyboard-header">
-				<form  action="#" onsubmit="return false;" style="vertical-align: middle;">
-					<button type="button" class="btn-startAudio btn btn-info btn-sm btn-parwnt-width" data-on="0" onclick="webKeyboard.startAudio(this.dataset.on=='1');this.dataset.on=this.dataset.on=='0'?'1':'0';" ></button>
-					<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.setGainValue(parseFloat(this.value))" style="padding:0">
-						<optgroup label="volume">
-							<option value="0">0%</option>
-							<option value="0.1">10%</option>
-							<option value="0.2">20%</option>
-							<option value="0.3">30%</option>
-							<option value="0.4">40%</option>
-							<option value="0.5" selected>50%</option>
-							<option value="0.6">60%</option>
-							<option value="0.7">70%</option>
-							<option value="0.8">80%</option>
-							<option value="0.9">90%</option>
-							<option value="1">100%</option>
-						</optgroup>
-					</select>
-					<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.setWave(this.value)" style="padding:0" id="webKeyboard-wave">
-						<optgroup label="wave-default">
-							<option value="sine">sine</option>
-							<option value="square" selected>square</option>
-							<option value="sawtooth">sawtooth</option>
-							<option value="triangle">triangle</option>
-							
-						</optgroup>
-						<optgroup label="wave-custom" id="wave-custom">
-							
-						</optgroup>
-					</select>
-					<div style="white-space: nowrap; display: inline-block;">
+				<form  action="#" onsubmit="return false;">
+					<div  class="flex-box">
+						
+						
+						<button type="button" class="btn-startAudio btn btn-info btn-sm btn-parwnt-width" data-on="0" onclick="webKeyboard.startAudio(this.dataset.on=='1');this.dataset.on=this.dataset.on=='0'?'1':'0';" ></button>
+						<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.setGainValue(parseFloat(this.value))" style="padding:0">
+							<optgroup label="volume">
+								<option value="0">0%</option>
+								<option value="0.1">10%</option>
+								<option value="0.2">20%</option>
+								<option value="0.3">30%</option>
+								<option value="0.4">40%</option>
+								<option value="0.5" selected>50%</option>
+								<option value="0.6">60%</option>
+								<option value="0.7">70%</option>
+								<option value="0.8">80%</option>
+								<option value="0.9">90%</option>
+								<option value="1">100%</option>
+							</optgroup>
+						</select>
+						<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.setWave(this.value)" style="padding:0" id="webKeyboard-wave">
+							<optgroup label="wave-default">
+								<option value="sine">sine</option>
+								<option value="square" selected>square</option>
+								<option value="sawtooth">sawtooth</option>
+								<option value="triangle">triangle</option>
+								
+							</optgroup>
+							<optgroup label="wave-custom" id="wave-custom">
+								
+							</optgroup>
+						</select>
 						<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.envelope.attack=parseFloat(this.value)" style="padding:0">
 							<optgroup label="attack sec">
 								<option value="0.0">0.0</option>
@@ -110,7 +112,7 @@
 								<option value="7.0">7.0</option>
 							</optgroup>
 						</select>
-	
+						
 						<select class="form-control form-control-sm btn-parwnt-width" onchange="webKeyboard.envelope.decay=parseFloat(this.value)" style="padding:0">
 							<optgroup label="decay sec">
 								<option value="0.0">0.0</option>
@@ -155,13 +157,29 @@
 								<option value="7.0">7.0</option>
 							</optgroup>
 						</select>
+						<select class="form-control form-control-sm btn-parwnt-width" onchange="document.querySelector('#kb-width').style.minWidth=3600*parseFloat(this.value)+'px';" style="padding:0">
+							<optgroup label="key width">
+								<option value="1" selected>x 1</option>
+								<option value="0.5">x 0.5</option>
+								<option value="0.8">x 0.8</option>
+								<option value="1.2">x 1.2</option>
+								<option value="1.5">x 1.5</option>
+								<option value="1.7">x 1.7</option>
+								<option value="2.0">x 2.0</option>
+								<option value="2.5">x 2.5</option>
+								<option value="3.0">x 3.0</option>
+								
+							</optgroup>
+						</select>
+
+						
 					</div>
 					
 				</form>
 				
 			</header>
 			<div class="keyboard">
-				<div class="kb-octave" data-tone="" ontouchstart="if (event.cancelable){event.preventDefault();return false;}">
+				<div id="kb-width" class="kb-octave" data-tone="" ontouchstart="if (event.cancelable){event.preventDefault();return false;}">
 					<div class="kb-octave-normal">
 						<!-- <div class="kb-pos f2            "><div class="kb-key kb-key-10" data-key="C" data-half="" data-tone="0" ></div></div>
 						<div class="kb-pos f2            "><div class="kb-key kb-key-20" data-key="D" data-half="" data-tone="0" ></div></div>
