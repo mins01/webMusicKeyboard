@@ -183,14 +183,15 @@ const webKeyboard = (function(){
 		},
 		attack:function(osc,sec){
 			osc.envelope_status = 'attack';
-			console.log('attck',audioCtx.currentTime,sec);
+			console.log('adsr-attck',audioCtx.currentTime,sec,osc.localGain.gain.value);
 			osc.localGain.gain.cancelScheduledValues(audioCtx.currentTime);
 			if(sec==0){
 				osc.localGain.gain.value = 1;
 			}else{
-				osc.localGain.gain.value = 0.1;
-				let waveArray = new Float32Array([0.5,0.7,0.8,0.85,0.9,0.92,0.94,0.96,0.98]);
-				osc.localGain.gain.setValueCurveAtTime(waveArray, audioCtx.currentTime, sec);
+				osc.localGain.gain.value = 0;
+				// let waveArray = new Float32Array([0.5,0.7,0.8,0.85,0.9,0.92,0.94,0.96,0.98,1]);
+				// osc.localGain.gain.setValueCurveAtTime(waveArray, audioCtx.currentTime, sec);
+				osc.localGain.gain.setTargetAtTime(1, audioCtx.currentTime + sec, 0.1);
 			}
 			
 			// osc.localGain.gain.setTargetAtTime(1, audioCtx.currentTime + sec, 10);
@@ -199,37 +200,38 @@ const webKeyboard = (function(){
 		decay:function(osc,sec){
 			if(osc.envelope_status!='attack'){return}
 			osc.envelope_status = 'decay';
-			console.log('decay',audioCtx.currentTime, sec);
+			console.log('adsr-decay',audioCtx.currentTime, sec,osc.localGain.gain.value);
 			osc.localGain.gain.cancelScheduledValues(audioCtx.currentTime);
 			if(sec==0){
 				osc.localGain.gain.value = 0.8;
 			}else{
-				osc.localGain.gain.cancelScheduledValues(audioCtx.currentTime);
-				osc.localGain.gain.setTargetAtTime(0.8, audioCtx.currentTime + sec, 0.1);
+				osc.localGain.gain.setTargetAtTime(0.8, audioCtx.currentTime + sec, 0.001);
 			}
 			
 		},
 		sustain:function(osc,sec,release_sec){
 			osc.envelope_status = 'sustain';
-			console.log('sustain',audioCtx.currentTime,sec,release_sec);
+			console.log('adsr-sustain',audioCtx.currentTime,sec,release_sec,osc.localGain.gain.value);
 			osc.timer_release = setTimeout(()=>{
 				this.release(osc,release_sec)
-			},sec*1000);
+			},sec*1000+1);
 		},
 		release:function(osc,sec){
 			osc.envelope_status = 'release';
-			console.log('release',sec);
 			if(osc.timer_decay){clearTimeout(osc.timer_decay);}
 			if(osc.timer_sustain){clearTimeout(osc.timer_sustain);}
 			if(osc.timer_release){clearTimeout(osc.timer_release);}
 			if(!osc.localGain){return}
+			console.log('adsr-release',sec,osc.localGain.gain.value);
+			osc.localGain.gain.cancelScheduledValues(audioCtx.currentTime);
 			if(sec==0){
 				osc.localGain.gain.value = 0;
+				osc.stop();
 			}else{
-				osc.localGain.gain.cancelScheduledValues(audioCtx.currentTime);
-			osc.localGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + sec)
+				osc.localGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + sec)
+				// osc.localGain.gain.setTargetAtTime(0, audioCtx.currentTime + sec, 0.001);
+				osc.stop(audioCtx.currentTime + sec)
 			}
-			osc.stop(audioCtx.currentTime + sec)
 		},
 	}
 	let stopOsc = function(osc,sec){
@@ -238,7 +240,6 @@ const webKeyboard = (function(){
 			return
 		}
 		if(osc.timmer){clearTimeout(osc.timmer)}
-		// if(osc.localGain)osc.localGain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + sec)
 		envelopeCtrl.release(osc,sec);
 		console.log('stopTone',osc.frequency.value,sec);
 	}
@@ -288,10 +289,10 @@ const webKeyboard = (function(){
 		waveTables:[],
 		volume:0.5,
 		envelope:{
-			attack:0.1,
-			decay:0.1,
+			attack:0.01,
+			decay:0.01,
 			sustain:1,
-			release:0.1,
+			release:0.5,
 		},
 		wave:'square',
 		init:function(){
