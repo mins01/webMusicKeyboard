@@ -2,14 +2,16 @@
 	"name": "web music keyboard 88",
 	"short_name": "keyboard88",
 	"start_url": "./keyboard88.html",
+	"scope": "./",
 	"display": "fullscreen",
 	"orientation": "landscape-primary",
 	"background_color": "#fff",
 	"description": "A simply web music keyboard. (key 88)",
 	"icons": [{
-	  "src": "webMusicKeboard88.png",
-	  "sizes": "96x96",
-	  "type": "image/png"
+	  "src": "webMusicKeyboard88.png",
+	  "sizes": "192x192",
+	  "type": "image/png",
+		"purpose":"any"
 	}],
 	"related_applications": [{
 	  "platform": "github",

@@ -2,14 +2,16 @@
 	"name": "web music keyboard ",
 	"short_name": "keyboard",
 	"start_url": "./keyboard.html",
+	"scope": "./",
 	"display": "fullscreen",
 	"orientation": "",
 	"background_color": "#fff",
 	"description": "A simply web music keyboard.",
 	"icons": [{
-	  "src": "webMusicKeboard.png",
-	  "sizes": "96x96",
-	  "type": "image/png"
+	  "src": "webMusicKeyboard.png",
+	  "sizes": "192x192",
+	  "type": "image/png",
+		"purpose":"any"
 	}],
 	"related_applications": [{
 	  "platform": "github",
