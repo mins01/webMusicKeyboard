@@ -248,14 +248,13 @@ const webKeyboard = (function(){
 			console.warn("start audio?");
 			return
 		}
-		let osc , localGain;
-		localGain = audioCtx.createGain();
-		localGain.connect(gainNode);		
-		osc = audioCtx.createOscillator();
-		osc.connect(localGain);
-		// console.log(osc);
 		let freq = webKeyboard.codeTable[code];
 		if(!freq){ return; }
+
+		let localGain = audioCtx.createGain();
+		localGain.connect(gainNode);		
+		let osc = audioCtx.createOscillator();
+		osc.connect(localGain);
 		
 		if(typeof wave =='string'){
 			osc.type = wave;
@@ -291,7 +290,7 @@ const webKeyboard = (function(){
 		envelope:{
 			attack:0.01,
 			decay:0.01,
-			sustain:1,
+			sustain:1, // sec!
 			release:0.5,
 		},
 		wave:'square',
