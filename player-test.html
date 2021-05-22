@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko" >
+<head>
+	<title>web music keyboard player</title>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Script-Type" content="text/javascript">
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="shortcut icon" href="https://mins01.github.io/web_work_doc/favicon.ico">	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel="manifest" href="keyboard-manifest.json">
+	
+	<script src="/js/ForGoogle.js"></script>
+	<!-- google analytics -->
+	<script>ForGoogle.analytics()</script>
+	
+	
+	<!-- jquery 관련 -->
+	<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"  ></script>
+	
+	<!-- 부트스트랩 4 : IE8지원안됨! -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous"> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script> 
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" crossorigin="anonymous"></script>
+	<!-- vue.js -->
+	<!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+	
+	<!-- meta og -->
+	
+	<meta property="og:title" content="web music keyboard player">
+	<meta property="og:description" content="web music keyboard player">
+	<meta name="og:image" content="https://mins01.github.io/web_work_doc/logo.gif">
+	<meta property="og:image:width" content="190">
+	<meta property="og:image:height" content="70" />
+	<meta property="og:site_name" content="web music keyboard player" />
+	<meta property="og:type" content="website">
+	
+	<meta name="mobile-web-app-capable" content="yes">
+
+	<!-- //meta og -->
+	<link rel="stylesheet" href="keyboard-core.css"> 
+	<link rel="stylesheet" href="keyboard.css"> 
+	<script src="noteValues.js"></script>
+	<script src="waveTables.js"></script>
+	
+	<script src="webKeyboard.js"></script>
+	<script>
+		window.onload = function(){
+			webKeyboard.codeTable = noteValues; 
+			webKeyboard.waveTables = waveTables; 
+			webKeyboard.init()
+			// let w_wave = document.querySelector("#wave-custom");
+			// for(var k in webKeyboard.waveTables){
+			// 	w_wave.append(new Option(k,k,false,false))
+			// }
+
+			let web_codes = document.querySelector("#webKeyboard-code");
+			for(var k in webKeyboard.codeTable){
+				web_codes.append(new Option(k,k,false,false))
+			}
+		}
+	</script>
+	
+</head>
+<body spellcheck="false" onselectstart="return false" ondragstart="return false">
+  <div>
+    <button type="button" onclick="webKeyboard.startAudio()">start</button>
+		<form class="form-inline" action="#" onsubmit="webKeyboard.playTone(this.code.value,this.wave.value,
+		{
+			attack:parseFloat(this['envelope-attack'].value),
+			decay:parseFloat(this['envelope-decay'].value),
+			sustain:parseFloat(this['envelope-sustain'].value),
+			release:parseFloat(this['envelope-release'].value),
+			});return false">
+			<div class="input-group input-group-sm m-1">
+				<div class="input-group-prepend">
+					<span class="input-group-text">code</span>
+				</div>
+				<!-- <input type="text" name="code" class="form-control" value="C5" > -->
+				<select class="form-control"  id="webKeyboard-code" name="code">
+					<option value="C5">default:C5</option>
+				</select>
+			</div>
+			<div class="input-group input-group-sm m-1">
+				<div class="input-group-prepend">
+					<span class="input-group-text">code</span>
+				</div>
+				<select class="form-control " name="wave" id="webKeyboard-wave">
+					<optgroup label="wave-default">
+						<option value="sine">sine</option>
+						<option value="square" selected>square</option>
+						<option value="sawtooth">sawtooth</option>
+						<option value="triangle">triangle</option>
+					</optgroup>
+				</select>
+			</div>
+			<div class="input-group input-group-sm m-1">
+				
+				<div class="input-group-prepend">
+					<span class="input-group-text">attack</span>
+				</div>
+				<input type="number" min="0" step="0.01" name="envelope-attack" class="form-control" value="0.01">
+			</div>
+			<div class="input-group input-group-sm m-1">
+				<div class="input-group-prepend">
+					<span class="input-group-text">decay</span>
+				</div>
+				<input type="number" min="0" step="0.01" name="envelope-decay" class="form-control" value="0.01">
+			</div>
+			<div class="input-group input-group-sm m-1">
+				<div class="input-group-prepend">
+					<span class="input-group-text">sustain</span>
+				</div>
+				<input type="number" min="-1" step="0.1" name="envelope-sustain" class="form-control" value="1">
+			</div>
+			<div class="input-group input-group-sm m-1">
+				<div class="input-group-prepend">
+					<span class="input-group-text">release</span>
+				</div>
+				<input type="number" min="0" step="0.01" name="envelope-release" class="form-control" value="0.3">
+			</div>
+
+			<button type="submit" class="btn btn-sm btn-info">playTone</button>
+			
+		</form>
+	</div>
+	<!-- 공대여자는 예쁘다. -->
+</body>
+</html>
