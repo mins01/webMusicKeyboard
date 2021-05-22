@@ -248,8 +248,12 @@ const webKeyboard = (function(){
 			console.warn("start audio?");
 			return
 		}
-		let freq = webKeyboard.codeTable[code];
-		if(!freq){ return; }
+		// code와 freq 동시 지원
+		let freq = code;
+		if(isNaN(code)){
+			freq = webKeyboard.codeTable[code];
+			if(!freq){ return; }
+		}
 
 		let localGain = audioCtx.createGain();
 		localGain.connect(gainNode);		
