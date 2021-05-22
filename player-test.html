@@ -45,6 +45,7 @@
 	<script src="waveTables.js"></script>
 	
 	<script src="webKeyboard.js"></script>
+	<script src="mmlPlayer.js"></script>
 	<script>
 		window.onload = function(){
 			webKeyboard.codeTable = noteValues; 
@@ -57,15 +58,31 @@
 
 			let web_codes = document.querySelector("#webKeyboard-code");
 			for(var k in webKeyboard.codeTable){
-				web_codes.append(new Option(k,k,false,false))
+				var v = webKeyboard.codeTable[k];
+				web_codes.append(new Option(k+"("+v+")",v,false,false))
 			}
+
+		}
+		function playmml(){
+			let mmldef='T40';
+			let mmlA="E5R1E3R0D3R0E3R0E1R0D1R0-G4R1";
+			let mmlB="F3R0F1R0F1R0A3R0F1R0E1R0D1R0D1R0E5R0";
+			let mmlC="C3R0C1R0C1R0E3R0C1R0-B1R0C1R0-B1R0-A1R0-A1-B5R0";
+			let mmlD="E1R0E1R0E1R0E1R0E1R0E1R0D1R0E1R0E1R0E1R0D1R0-A1R0-A1R0B3R1";
+			let mmlE="-A1R0-B1R0C1R0D1R0E1R0F1R0E1R0F3R1A3R1B1R0A1R0F3R0E3R0E1R0E4R0";
+			// https://en.wikipedia.org/wiki/Music_Macro_Language#Syntax_2
+
+			mmlPlayer.play(mmldef+mmlA+mmlB+mmlB);
+			// mmlPlayer.play(mmldef+mmlC+mmlC+mmlB);
+			// mmlPlayer.play(mmldef+mmlC+mmlD+mmlE);
 		}
 	</script>
 	
 </head>
 <body spellcheck="false" onselectstart="return false" ondragstart="return false">
   <div>
-    <button type="button" onclick="webKeyboard.startAudio()">start</button>
+    <button class="btn btn-info" type="button" onclick="webKeyboard.startAudio()">start</button>
+    <button class="btn btn-info" type="button" onclick="playmml()">playmml</button>
 		<form class="form-inline" action="#" onsubmit="webKeyboard.playTone(this.code.value,this.wave.value,
 		{
 			attack:parseFloat(this['envelope-attack'].value),
