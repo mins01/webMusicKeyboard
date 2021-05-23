@@ -53,25 +53,25 @@ const MmlPlayer = (function(){
     load(cmds){
       let defCmd = {
         'org':'',
-        'T':120,
-        'V':8,
-        'O':4,
-        'L':4,
         'semi':0,
         'key':'',
         // 'octave':4,
         'code':'',//key+semi+O
         'freq':0, //key+semi+O
+        'length':-1,
         'N':-1,
-        'length':0,
+        'T':120,
+        'V':8,
+        'O':4,
+        'L':4,
       };
-      let playCmds = new Array(cmds.length)
+      let codeCmds = new Array(cmds.length)
       let preCmd = defCmd;
       for(let i=0,m=cmds.length;i<m;i++){
-        playCmds[i] = this.convertCmd(cmds[i],preCmd);
-        preCmd = playCmds[i];
+        codeCmds[i] = this.convertCmd(cmds[i],preCmd);
+        preCmd = codeCmds[i];
       }
-      this.playCmds = playCmds;
+      this.codeCmds = codeCmds;
     }
     convertCmd(cmd,preCmd){
       let arg1 = cmd.replace(/[^<>TVOLNCDEFGABR]/,'');
@@ -82,7 +82,7 @@ const MmlPlayer = (function(){
       let currCmd = { ...preCmd };
       currCmd['org'] = matches[0];
       currCmd['semi'] = 0;
-      currCmd['length'] = 0;
+      currCmd['length'] = -1;
       currCmd['freq'] = -1;
       currCmd['code']='';
       switch(matches[2]){
@@ -119,14 +119,45 @@ const MmlPlayer = (function(){
         currCmd['length']=parseFloat(matches[3]!=''?matches[3]:preCmd['L']);
         break;
       }
-      console.log(currCmd);
+      // console.log(currCmd);
       return currCmd;
     }
     play(){
+      console.log(this.codeCmds);
       console.log('재생');
+      let pointer = 0;
+      let codeCmds = this.codeCmds;
+      this.playPointer(0);
     }
-  }
+    playPointer(pointer){
+      if(this.codeCmds.length <= pointer){
+        return false;
+      }
+      let cmd = this.codeCmds[pointer];
+      // console.log(cmd);
+      while(this.codeCmds.length > pointer && cmd['length']==-1){
+        console.log(cmd);
+        pointer++; //다음
+        cmd = this.codeCmds[pointer];
+      }
+      cmd = this.codeCmds[pointer];
+      // 재생 쉼표
+      console.log(cmd);
+      if(cmd.freq!=-1){
+        webKeyboard.playTone(cmd.freq, 'square', {
+          attack:parseFloat(0),
+          decay:parseFloat(0),
+          sustain:parseFloat((cmd['length']+1)/10),
+          release:parseFloat(0.3),
+        });
+      }
+      pointer++;
+      let thisC = this;
+      setTimeout(function(){
+        thisC.playPointer(pointer)
+      },parseFloat((cmd['length']+1)/10+0.3)*1000)
+    }
+  };
 
   return MmlPlayer;
-})()
-
+})();
