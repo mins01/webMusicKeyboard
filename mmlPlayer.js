@@ -11,40 +11,122 @@ CDEFGAB : 도~ 시
 R    : 쉼표
 T120 L4 V8 O4  :초기값
  */
-
-const mmlPlayer = (function(){
+/*
+The sound length
+Value	Length
+0	1/32
+1	1/16
+2	dotted 1/16
+3	1/8
+4	dotted 1/8
+5	1/4
+6	dotted 1/4
+7	1/2
+8	dotted 1/2
+9	1
+*/
+const MmlPlayer = (function(){
   let defmml ="T120L4V8O4";
-  let Player = function(){
-    this.cmds = null;
-  }
-  Player.prototype.load = function(mmlCmds){
-    let mmlCmds = new Array(mmlCmds.length)
-    for(let i=0,m=mmlCmds.length;i<m;i++){
-      mmlCmds[i] = this.convertCmd(mmlCmds[i]);
+  class MmlPlayer {
+    constructor() {
+      this.playCmds = null;
     }
-    this.mmlCmds = mmlCmds;
-  }
-  Player.prototype.convertCmd = function(mmlCmd){
-    let arg1 = mmlCmd.replace(/[^TVOLNCDEFGABR]/,'');
-    if(arg1.length==0){return false;}
-    let matches = mmlCmd.trim().match(/[0-9]{1,4}$/g);
-    let arg2 = matches[0]?matches[0]:0;  
-    // arg3,arg4 처리 해야함
-    console.log(arg1,arg2);
-  }
-  let mmlPlayer = {
-    "play":function(mml){
-      
-      mml = defmml+mml;
-      let player = new Player();
-      //T120L4V8O4T40E5R1E3R0D3R0E3R0E1R0D1R0-G4R1F3R0F1R0F1R0A3R0F1R0E1R0D1R0D1R0E5R0F3R0F1R0F1R0A3R0F1R0E1R0D1R0D1R0E5R0
-      let cmds = mml.match(/((\<|\>)?(\+|#|-)?[A-Z]\d{0,4})/g);
-      player.load(cmds);
-      // for(let i=0,m=cmds.length;i<m;i++){
-      //   player.cmd(cmds[i]);
-      // }
+    codeToN(semi,key,octave){
+      let n=0;
+      switch(key){
+        case 'C':n=0;break;
+        case 'D':n=2;break;
+        case 'E':n=4;break;
+        case 'F':n=5;break;
+        case 'G':n=7;break;
+        case 'A':n=9;break;
+        case 'B':n=11;break;
+      }
+      n+=semi;
+      n+=(octave*12);
+      return n;
     }
-  };
-  return mmlPlayer;
+    loadMml(mml){
+      let cmds = mml.match(/(([\+#\-]{0,1})[\<\>A-Z]\d{0,4})/g);
+      this.load(cmds);
+    }
+    load(cmds){
+      let defCmd = {
+        'org':'',
+        'T':120,
+        'V':8,
+        'O':4,
+        'L':4,
+        'semi':0,
+        'key':'',
+        // 'octave':4,
+        'code':'',//key+semi+O
+        'freq':0, //key+semi+O
+        'N':-1,
+        'length':0,
+      };
+      let playCmds = new Array(cmds.length)
+      let preCmd = defCmd;
+      for(let i=0,m=cmds.length;i<m;i++){
+        playCmds[i] = this.convertCmd(cmds[i],preCmd);
+        preCmd = playCmds[i];
+      }
+      this.playCmds = playCmds;
+    }
+    convertCmd(cmd,preCmd){
+      let arg1 = cmd.replace(/[^<>TVOLNCDEFGABR]/,'');
+      if(arg1.length==0){return false;}
+      // let matches = cmd.trim().match(/[0-9]{1,4}$/g);
+      let matches = cmd.match(/([\+#-]{0,1})([<>A-Z])(\d{0,4})/);
+      // console.log(cmd,matches);
+      let currCmd = { ...preCmd };
+      currCmd['org'] = matches[0];
+      currCmd['semi'] = 0;
+      currCmd['length'] = 0;
+      currCmd['freq'] = -1;
+      currCmd['code']='';
+      switch(matches[2]){
+        case 'T': currCmd['T']=parseInt(matches[3],10); break;
+        case 'V': currCmd['V']=parseInt(matches[3],10); break;
+        case 'O': currCmd['O']=parseInt(matches[3],10); break;
+        case 'L': currCmd['L']=parseInt(matches[3],10); break;
+        case 'N': currCmd['T']=parseInt(matches[3],10); break;
+        case '<': currCmd['O']=Math.max(0,currCmd['O']-1); break;
+        case '>': currCmd['O']=Math.min(8,currCmd['O']+1); break;
+        case 'R':;
+        currCmd['N']=-1;
+        currCmd['freq'] = noteN[currCmd['N']]?noteN[currCmd['N']]:-1;
+        currCmd['length']=parseFloat(matches[3]!=''?matches[3]:preCmd['L']);
+        break;
+        case 'C':;
+        case 'D':;
+        case 'E':;
+        case 'F':;
+        case 'G':;
+        case 'A':;
+        case 'B':;
+        let semiCode = '';
+        switch(matches[1]){
+          case '-':currCmd['semi']=-1;semiCode='-';break;
+          case '+':;
+          case '#':currCmd['semi']=1;semiCode='+';break;
+          default:currCmd['semi']=0;break;
+        }
+        currCmd['key']=matches[2];
+        currCmd['code']=(semiCode)+currCmd['key']+currCmd['O']
+        currCmd['N'] = this.codeToN(currCmd['semi'],currCmd['key'],currCmd['O']);
+        currCmd['freq'] = noteN[currCmd['N']]?noteN[currCmd['N']]:-1;
+        currCmd['length']=parseFloat(matches[3]!=''?matches[3]:preCmd['L']);
+        break;
+      }
+      console.log(currCmd);
+      return currCmd;
+    }
+    play(){
+      console.log('재생');
+    }
+  }
+
+  return MmlPlayer;
 })()
 
