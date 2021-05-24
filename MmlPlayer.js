@@ -1,5 +1,6 @@
 /*
 https://namu.wiki/w/%EC%9E%91%EA%B3%A1(%EB%A7%88%EB%B9%84%EB%85%B8%EA%B8%B0)
+https://en.wikipedia.org/wiki/Music_Macro_Language#Syntax_2
 T(32~255) : 템포
 V(0~15) : 볼륨
 O(0~8) : 옥타브
@@ -48,6 +49,7 @@ const MmlPlayer = (function(){
     }
     loadMml(mml){
       let cmds = mml.match(/(([\+#\-]{0,1})[\<\>A-Z]\d{0,4})/g);
+      // console.log(cmds);
       this.load(cmds);
     }
     load(cmds){
@@ -59,6 +61,8 @@ const MmlPlayer = (function(){
         'code':'',//key+semi+O
         'freq':0, //key+semi+O
         'length':-1,
+        'dotted':0,
+        'sec':0,
         'N':-1,
         'T':120,
         'V':8,
@@ -71,6 +75,7 @@ const MmlPlayer = (function(){
         codeCmds[i] = this.convertCmd(cmds[i],preCmd);
         preCmd = codeCmds[i];
       }
+      console.log(codeCmds);
       this.codeCmds = codeCmds;
     }
     convertCmd(cmd,preCmd){
@@ -84,7 +89,10 @@ const MmlPlayer = (function(){
       currCmd['semi'] = 0;
       currCmd['length'] = -1;
       currCmd['freq'] = -1;
+      currCmd['dotted'] = 0;
+      currCmd['sec'] = -1;
       currCmd['code']='';
+      let def_sec = 60/currCmd['T'] //4분음표의 연주 길이
       switch(matches[2]){
         case 'T': currCmd['T']=parseInt(matches[3],10); break;
         case 'V': currCmd['V']=parseInt(matches[3],10); break;
@@ -94,9 +102,23 @@ const MmlPlayer = (function(){
         case '<': currCmd['O']=Math.max(0,currCmd['O']-1); break;
         case '>': currCmd['O']=Math.min(8,currCmd['O']+1); break;
         case 'R':;
+        currCmd['key']=matches[2];
+        currCmd['code']=currCmd['key']+currCmd['O']
         currCmd['N']=-1;
         currCmd['freq'] = noteN[currCmd['N']]?noteN[currCmd['N']]:-1;
-        currCmd['length']=parseFloat(matches[3]!=''?matches[3]:preCmd['L']);
+        currCmd['length']=parseInt(matches[3]!=''?matches[3]:preCmd['L']);
+          switch(currCmd['length']){
+            case 0: currCmd['sec'] = def_sec/8; break;
+            case 1: currCmd['sec'] = def_sec/4; break;
+            case 2: currCmd['sec'] = def_sec/4; currCmd['dotted']=1; break;
+            case 3: currCmd['sec'] = def_sec/2; break;
+            case 4: currCmd['sec'] = def_sec/2; currCmd['dotted']=1;  break;
+            case 5: currCmd['sec'] = def_sec; break;
+            case 6: currCmd['sec'] = def_sec; currCmd['dotted']=1;  break;
+            case 7: currCmd['sec'] = def_sec*2; break;
+            case 8: currCmd['sec'] = def_sec*2; currCmd['dotted']=1;  break;
+            case 9: currCmd['sec'] = def_sec*4; break;
+          }
         break;
         case 'C':;
         case 'D':;
@@ -116,7 +138,19 @@ const MmlPlayer = (function(){
         currCmd['code']=(semiCode)+currCmd['key']+currCmd['O']
         currCmd['N'] = this.codeToN(currCmd['semi'],currCmd['key'],currCmd['O']);
         currCmd['freq'] = noteN[currCmd['N']]?noteN[currCmd['N']]:-1;
-        currCmd['length']=parseFloat(matches[3]!=''?matches[3]:preCmd['L']);
+        currCmd['length']=parseInt(matches[3]!=''?matches[3]:preCmd['L']);
+          switch(currCmd['length']){
+            case 0: currCmd['sec'] = def_sec/8; break;
+            case 1: currCmd['sec'] = def_sec/4; break;
+            case 2: currCmd['sec'] = def_sec/4; currCmd['dotted']=1; break;
+            case 3: currCmd['sec'] = def_sec/2; break;
+            case 4: currCmd['sec'] = def_sec/2; currCmd['dotted']=1;  break;
+            case 5: currCmd['sec'] = def_sec; break;
+            case 6: currCmd['sec'] = def_sec; currCmd['dotted']=1;  break;
+            case 7: currCmd['sec'] = def_sec*2; break;
+            case 8: currCmd['sec'] = def_sec*2; currCmd['dotted']=1;  break;
+            case 9: currCmd['sec'] = def_sec*4; break;
+          }
         break;
       }
       // console.log(currCmd);
@@ -135,10 +169,14 @@ const MmlPlayer = (function(){
       }
       let cmd = this.codeCmds[pointer];
       // console.log(cmd);
-      while(this.codeCmds.length > pointer && cmd['length']==-1){
+      while(this.codeCmds.length > pointer && cmd['sec']==-1){
         console.log(cmd);
         pointer++; //다음
         cmd = this.codeCmds[pointer];
+      }
+      if(!this.codeCmds[pointer]){
+        console.log('END');
+        return 
       }
       cmd = this.codeCmds[pointer];
       // 재생 쉼표
@@ -147,7 +185,7 @@ const MmlPlayer = (function(){
         webKeyboard.playTone(cmd.freq, 'square', {
           attack:parseFloat(0),
           decay:parseFloat(0),
-          sustain:parseFloat((cmd['length']+1)/10),
+          sustain:parseFloat((cmd['sec'])/10),
           release:parseFloat(0.3),
         });
       }
@@ -155,7 +193,7 @@ const MmlPlayer = (function(){
       let thisC = this;
       setTimeout(function(){
         thisC.playPointer(pointer)
-      },parseFloat((cmd['length']+1)/10+0.3)*1000)
+      },parseFloat((cmd['sec'])/10+0.3)*1000)
     }
   };
 
