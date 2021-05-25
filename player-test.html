@@ -47,7 +47,12 @@
 	
 	<script src="webKeyboard.js"></script>
 	<script src="MmlPlayer.js"></script>
+	<script src="MmlPlayerControl.js"></script>
+	<script src="mml/mml_startwars.js"></script>
+
+	
 	<script>
+		let mpc = new MmlPlayerControl();
 		let player = new MmlPlayer();
 		window.onload = function(){
 			webKeyboard.codeTable = noteValues; 
@@ -78,6 +83,7 @@
 			// https://namu.wiki/w/%EC%9E%91%EA%B3%A1(%EB%A7%88%EB%B9%84%EB%85%B8%EA%B8%B0)
 			// https://en.wikipedia.org/wiki/Music_Macro_Language#Syntax_2
 			// http://mabinogi.nexon.com/page/community/composer_list.asp
+			// https://electronicmusic.fandom.com/wiki/Music_Macro_Language
 			// player.loadMml(mmldef+mmlA+mmlB+mmlB+mmlC+mmlC+mmlB+mmlC+mmlD+mmlE);
 
 			player.loadMml('G5G5A5A5G5G5E7R5G5G5E5E5D7G5G5A5A5G5G5E7G5G5D5E5C7R5');
@@ -87,8 +93,9 @@
 			// mmlPlayer.play(mmldef+mmlC+mmlD+mmlE);
 		}
 		function playMmlCode(mml){
-			player.loadMml(mml);
-			player.play();
+			mpc.clear();
+			mpc.load(mml);
+			mpc.play();
 		}
 	</script>
 	
@@ -102,7 +109,7 @@
 				<div class="input-group-prepend">
 					<span class="input-group-text" id="basic-addon1">테스트코드</span>
 				</div>
-				<input class="form-control" type="text" name="mml" value="T100O7C1C2C3C4C5C6C7C8C9">
+				<input class="form-control" type="text" name="mml" value="T100O7C1C2C3C4C5C6C7C8C9,T100O7A1A2A3A4A5A6A7A8A9">
 				<div class="input-group-append">
 					<button class="btn btn-info" type="submit">연주</button>	
 				</div>
@@ -158,6 +165,17 @@
 					<span class="input-group-text" id="basic-addon1">아리랑</span>
 				</div>
 				<input class="form-control" type="text" name="mml" value="GAGACDCDEDECAGAGACDCDEDCAGACDCCGGGEDEDECAGAGACDCDEDCAGACDCC">
+				<div class="input-group-append">
+					<button class="btn btn-info" type="submit">연주</button>	
+				</div>
+			</div>
+		</form>
+		<form action="#" onsubmit="playMmlCode(mml_startwars);return false;">
+			<div class="input-group mb-3">
+				<div class="input-group-prepend">
+					<span class="input-group-text" id="basic-addon1">스타워즈 메인테마</span>
+				</div>
+				<input class="form-control" type="text" name="mml" value="" disabled>
 				<div class="input-group-append">
 					<button class="btn btn-info" type="submit">연주</button>	
 				</div>

@@ -163,32 +163,26 @@ const webKeyboard = (function(){
 		
 	}
 	let envelopeCtrl = {
-		ad:function(osc,attack_sec,decay_sec){
-			this.attack(osc,attack_sec);
-			osc.timer_decay = setTimeout(()=>{
-				this.decay(osc,decay_sec)
-			},attack_sec*1000);
-		},
-		adsr:function(osc,attack_sec,decay_sec,sustain_sec,release_sec){
+		adsr:function(osc,attack_sec,decay_sec,sustain_sec,release_sec,volume){
 			// console.log('adsr',attack_sec,decay_sec,sustain_sec,release_sec);
-			this.attack(osc,attack_sec);
+			this.attack(osc,attack_sec,volume);
 			osc.timer_decay = setTimeout(()=>{
-				this.decay(osc,decay_sec)
+				this.decay(osc,decay_sec,volume)
 			},attack_sec*1000);
 			if(sustain_sec == -1){
 				// 계속 유지
 			}else{
 				osc.timer_sustain = setTimeout(()=>{
-					this.sustain(osc,sustain_sec,release_sec);
+					this.sustain(osc,sustain_sec,release_sec,volume);
 				},(attack_sec+decay_sec)*1000);
 			}
 		},
-		attack:function(osc,sec){
+		attack:function(osc,sec,volume){
 			osc.envelope_status = 'attack';
 			// console.log('adsr-attck',audioCtx.currentTime,sec,osc.localGain.gain.value);
 			osc.localGain.gain.cancelScheduledValues(audioCtx.currentTime);
 			if(sec==0){
-				osc.localGain.gain.value = 1;
+				osc.localGain.gain.value = 1*volume;
 			}else{
 				osc.localGain.gain.value = 0;
 				// let waveArray = new Float32Array([0.5,0.7,0.8,0.85,0.9,0.92,0.94,0.96,0.98,1]);
@@ -199,22 +193,22 @@ const webKeyboard = (function(){
 			// osc.localGain.gain.setTargetAtTime(1, audioCtx.currentTime + sec, 10);
 			// osc.localGain.gain.exponentialRampToValueAtTime(1, audioCtx.currentTime + sec)
 		},
-		decay:function(osc,sec){
+		decay:function(osc,sec,volume){
 			if(osc.envelope_status!='attack'){return}
 			osc.envelope_status = 'decay';
 			// console.log('adsr-decay',audioCtx.currentTime, sec,osc.localGain.gain.value);
 			osc.localGain.gain.cancelScheduledValues(audioCtx.currentTime);
 			if(sec==0){
-				osc.localGain.gain.value = 0.8;
+				osc.localGain.gain.value = 0.8*volume;
 			}else{
 				osc.localGain.gain.setTargetAtTime(0.8, audioCtx.currentTime + sec, 0.001);
 			}
 			
 		},
-		sustain:function(osc,sec,release_sec){
+		sustain:function(osc,sec,release_sec,volume){
 			osc.envelope_status = 'sustain';
 			// console.log('adsr-sustain',audioCtx.currentTime,sec,release_sec,osc.localGain.gain.value);
-			osc.localGain.gain.value = 0.8;
+			osc.localGain.gain.value = 0.8*volume;
 			osc.timer_release = setTimeout(()=>{
 				this.release(osc,release_sec)
 			},sec*1000+1);
@@ -246,20 +240,23 @@ const webKeyboard = (function(){
 		envelopeCtrl.release(osc,sec);
 		console.log('stopTone',osc.frequency.value,sec);
 	}
-	let playToneIdx = function(idx,wave,envelope){
+	let playToneIdx = function(idx,wave,envelope,volume){
 		let freq = webKeyboard.noteTable[idx];
 		if(isNaN(freq)){return;}
-		return playTone(freq,wave,envelope);
+		return playTone(freq,wave,envelope,volume);
 	}
-	let playToneCode = function(code,wave,envelope){
+	let playToneCode = function(code,wave,envelope,volume){
 		let freq = webKeyboard.codeTable[code];
 		if(isNaN(freq)){return;}
-		return playTone(freq,wave,envelope);
+		return playTone(freq,wave,envelope,volume);
 	}
-	let playTone = function(freq,wave,envelope) {
+	let playTone = function(freq,wave,envelope,volume) {
 		if(!audioCtx){
 			console.warn("start audio?");
 			return
+		}
+		if(volume===undefined){
+			volume = 1;
 		}
 		let localGain = audioCtx.createGain();
 		localGain.connect(gainNode);		
@@ -287,9 +284,9 @@ const webKeyboard = (function(){
 			osc.disconnect();
 			osc = null;
 		}
-		envelopeCtrl.adsr(osc,envelope.attack,envelope.decay,envelope.sustain,envelope.release);
+		envelopeCtrl.adsr(osc,envelope.attack,envelope.decay,envelope.sustain,envelope.release,volume);
 		osc.start();
-		console.log('playTone',osc.frequency.value,osc.type,envelope);
+		console.log('playTone',audioCtx.currentTime,osc.frequency.value,osc.type,volume);
 		return osc;
 	}
 
