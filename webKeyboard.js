@@ -126,6 +126,7 @@ const webKeyboard = (function(){
 
 			gainNode.connect(audioCtx.destination);
 			console.log('startAudio');
+			webKeyboard.audioCtx = audioCtx
 		}else{
 			if(off){
 				gainNode.disconnect();
@@ -291,6 +292,7 @@ const webKeyboard = (function(){
 	}
 
 	let webKeyboard = {
+		audioCtx:audioCtx,
 		codeTable:null,
 		noteTable:null,
 		waveTables:null,

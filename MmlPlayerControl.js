@@ -30,7 +30,16 @@ const MmlPlayerControl = (function(){
   let defmml ="T120L4V8O4";
   class MmlPlayerControl {
     constructor() {
-      this.players = [];
+      // this.players = [];
+      this.waves = ['square','square','square','square','square','square'];
+      this.players = [new MmlPlayer(),new MmlPlayer(),new MmlPlayer(),new MmlPlayer(),new MmlPlayer(),new MmlPlayer()]
+      this.players[0].name="p0";
+      this.players[1].name="p1";
+      this.players[2].name="p2";
+      this.players[3].name="p3";
+      this.players[4].name="p4";
+      this.players[5].name="p5";
+
     }
     load(strMmls){
       console.log('MmlPlayerControl.load',strMmls);
@@ -39,21 +48,28 @@ const MmlPlayerControl = (function(){
       let mmls = strMmls.split(',');
       let player = null;
       let thisC = this;
-      mmls.forEach((mml)=>{
-        player = new MmlPlayer();
+      mmls.forEach((mml,k)=>{
+        // player = new MmlPlayer();
+        // player.wave = thisC.waves[k];
         console.log('MmlPlayerControl.load.foreach',mml);
-        player.loadMml(mml);
-        thisC.players.push(player);
+        thisC.players[k].loadMml(mml);
+        // thisC.players.push(player);
       });
     }
     play(){
+      this.players.forEach((player,k)=>{
+        if(player.mml.length) player.play();
+      })
+    }
+    stop(){
       this.players.forEach((player)=>{
-        player.play();
+        player.stop();
       })
     }
     clear(){
-      this.players.splice(0,this.players.length)
-    }
+      this.players.forEach((player,k)=>{
+        if(player.mml.length) player.clear();
+      })    }
     
   };
 

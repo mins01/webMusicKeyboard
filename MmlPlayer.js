@@ -30,8 +30,11 @@ const MmlPlayer = (function(){
   let defmml ="T120L4V8O4";
   class MmlPlayer {
     constructor() {
+      this.name='';
       this.playCmds = null;
       this.mml = "";
+      this.tm = null;
+      this.wave = 'square';
     }
     codeToN(semi,key,octave){
       let n=0;
@@ -55,6 +58,9 @@ const MmlPlayer = (function(){
       this.load(cmds);
     }
     load(cmds){
+      if(!cmds || cmds.length ==0){
+        return;
+      }
       let defCmd = {
         'org':'',
         'N':-1,
@@ -74,6 +80,7 @@ const MmlPlayer = (function(){
       let codeCmds = new Array(cmds.length)
       let preCmd = defCmd;
       for(let i=0,m=cmds.length;i<m;i++){
+        if(!cmds[i]){continue;}
         codeCmds[i] = this.convertCmd(cmds[i],preCmd);
         preCmd = codeCmds[i];
       }
@@ -83,11 +90,11 @@ const MmlPlayer = (function(){
     convertCmd(cmd,preCmd){
       cmd = cmd.toUpperCase();
       let arg1 = cmd.replace(/[^<>TVOLNCDEFGABR]/,'');
-      if(arg1.length==0){return false;}
+      let currCmd = { ...preCmd };
+      if(arg1.length==0){return currCmd;}
       // let matches = cmd.trim().match(/[0-9]{1,4}$/g);
       let matches = cmd.match(/([<>A-Z])([\+#-]{0,1})(\d{0,4})(\.{0,})/);
       // console.log(cmd,matches);
-      let currCmd = { ...preCmd };
       currCmd['org'] = matches[0];
       currCmd['semi'] = 0;
       currCmd['length'] = -1;
@@ -98,13 +105,13 @@ const MmlPlayer = (function(){
       let t;
       let def_sec = 60/currCmd['T']*4 //온음표의 연주 길이
       switch(matches[1]){
-        case 'T': currCmd['T']=parseInt(matches[3],10); break;
-        case 'V': currCmd['V']=parseInt(matches[3],10); break;
-        case 'O': currCmd['O']=parseInt(matches[3],10); break;
-        case 'L': currCmd['L']=parseInt(matches[3],10); break;
-        case 'N': currCmd['T']=parseInt(matches[3],10); break;
-        case '<': currCmd['O']=Math.max(0,currCmd['O']-(matches[3]==""?1:parseInt(matches[3]))); break;
-        case '>': currCmd['O']=Math.min(8,currCmd['O']+(matches[3]==""?1:parseInt(matches[3]))); break;
+        case 'T': if(matches[3] != '') currCmd['T']=parseInt(matches[3],10); break;
+        case 'V': if(matches[3] != '') currCmd['V']=parseInt(matches[3],10); break;
+        case 'O': if(matches[3] != '') currCmd['O']=parseInt(matches[3],10); break;
+        case 'L': if(matches[3] != '') currCmd['L']=parseInt(matches[3],10); break;
+        case 'N': if(matches[3] != '') currCmd['T']=parseInt(matches[3],10); break;
+        case '<': if(matches[3] != '') currCmd['O']=Math.max(0,currCmd['O']-(matches[3]==""?1:parseInt(matches[3]))); break;
+        case '>': if(matches[3] != '') currCmd['O']=Math.min(8,currCmd['O']+(matches[3]==""?1:parseInt(matches[3]))); break;
         case 'P':;
         case 'R':;
         currCmd['key']=matches[1];
@@ -146,8 +153,16 @@ const MmlPlayer = (function(){
       let codeCmds = this.codeCmds;
       this.playPointer(0);
     }
+    stop(){
+      if(this.tm) clearTimeout(this.tm);
+    }
+    clear(){
+      this.playCmds = null;
+      this.mml = "";
+      this.tm = null;
+    }
     playPointer(pointer){
-      if(this.codeCmds.length <= pointer){
+      if(!this.codeCmds ||  this.codeCmds.length <= pointer){
         return false;
       }
       let cmd = this.codeCmds[pointer];
@@ -162,26 +177,26 @@ const MmlPlayer = (function(){
         return 
       }
       cmd = this.codeCmds[pointer];
-      // console.log(cmd);
       if(cmd.freq!=-1){
-        this.playTone(cmd.freq, 'square', {
+        console.log('player',this.name,cmd);
+        this.playTone(cmd.freq, this.wave, {
           attack:parseFloat(0),
           decay:parseFloat(0),
-          sustain:parseFloat(cmd['sec']*0.7),
-          release:parseFloat(cmd['sec']*0.3),
+          sustain:parseFloat(cmd['sec']*0.9),
+          release:parseFloat(cmd['sec']*0.1),
         },cmd.V/15);
       }else{
         // 재생 쉼표
-        console.log('rest',((cmd['sec']))*1000);
+        console.log('player',this.name,'rest',((cmd['sec']))*1000);
       }
       pointer++;
       let thisC = this;
-      setTimeout(function(){
+      this.tm = setTimeout(function(){
         thisC.playPointer(pointer)
       },parseFloat((cmd['sec']))*1000)
     }
-    playTone(code,wave,envelope,volume){
-      webKeyboard.playTone(code,wave,envelope,volume);
+    playTone(freq,wave,envelope,volume){
+      webKeyboard.playTone(freq,wave,envelope,volume);
     }
   };
 

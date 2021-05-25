@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="ko" >
+<head>
+	<title>web music keyboard player</title>
+	<meta charset="utf-8">
+	<meta http-equiv="Content-Script-Type" content="text/javascript">
+	<meta http-equiv="Content-Style-Type" content="text/css">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<link rel="shortcut icon" href="https://mins01.github.io/web_work_doc/favicon.ico">	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<link rel="manifest" href="keyboard-manifest.json">
+	
+	<script src="/js/ForGoogle.js"></script>
+	<!-- google analytics -->
+	<script>ForGoogle.analytics()</script>
+	
+	
+	<!-- jquery 관련 -->
+	<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"  ></script>
+	
+	<!-- 부트스트랩 4 : IE8지원안됨! -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous"> 
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script> 
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" crossorigin="anonymous"></script>
+	<!-- vue.js -->
+	<!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+	
+	<!-- meta og -->
+	
+	<meta property="og:title" content="web music keyboard player">
+	<meta property="og:description" content="web music keyboard player">
+	<meta name="og:image" content="https://mins01.github.io/web_work_doc/logo.gif">
+	<meta property="og:image:width" content="190">
+	<meta property="og:image:height" content="70" />
+	<meta property="og:site_name" content="web music keyboard player" />
+	<meta property="og:type" content="website">
+	
+	<meta name="mobile-web-app-capable" content="yes">
+	
+	<!-- //meta og -->
+	<link rel="stylesheet" href="keyboard-core.css"> 
+	<link rel="stylesheet" href="keyboard.css"> 
+	<script src="noteValues.js"></script>
+	<script src="noteTable.js"></script>
+	<script src="waveTables.js"></script>
+	
+	<script src="webKeyboard.js"></script>
+	<script src="MmlPlayer.js"></script>
+	<script src="MmlPlayerControl.js"></script>
+	<script src="mml/mml_startwars.js"></script>
+	
+	
+	<script>
+		//!<--
+		let mpc = new MmlPlayerControl();
+		let player = new MmlPlayer();
+		window.onload = function(){
+			webKeyboard.codeTable = noteValues; 
+			webKeyboard.waveTables = waveTables; 
+			webKeyboard.init()
+			
+			document.querySelectorAll(".wave-custom").forEach((w_wave)=>{
+				for(var k in webKeyboard.waveTables){
+					w_wave.append(new Option(k,k,false,false))
+				}
+			})
+			
+			webKeyboard.setGainValue(parseFloat(0.1))
+		}
+		function playMml(mml){
+			mpc.stop();
+			mpc.clear();
+			mpc.load(mml);
+			mpc.play();
+		}
+		function stopMml(){
+			mpc.stop();
+			mpc.clear();
+		}
+		function getWave(wave){
+			if(!webKeyboard.audioCtx){return;}
+			switch(wave){
+				case 'sine':;
+				case 'square':;
+				case 'sawtooth':;
+				case 'triangle':;
+				return wave
+				break;
+				default:
+				if(waveTables[wave]){
+					return webKeyboard.audioCtx.createPeriodicWave(waveTables[wave].real, waveTables[wave].imag, {disableNormalization: true});
+				}else{
+					console.error("not exists this.waveTables[type]",type);
+					return;
+				}
+				break;
+			}
+			
+		}
+		//-->
+	</script>
+	
+</head>
+<body spellcheck="false" >
+	<div class="container">
+		<h1>player</h1>
+		<hr>
+		<div>
+			<button class="btn btn-success" type="button" onclick="webKeyboard.startAudio()">start</button>
+			<hr>
+			<div>
+				<div class="input-group my-1">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">WAVE</span>
+					</div>
+					<select class="form-control" onchange="mpc.players[0].wave=getWave(this.value)">
+						<optgroup label="wave-default">
+							<option value="sine">sine</option>
+							<option value="square" selected>square</option>
+							<option value="sawtooth">sawtooth</option>
+							<option value="triangle">triangle</option>	
+						</optgroup>
+						<optgroup label="wave-custom" class="wave-custom">
+						</optgroup>
+					</select>
+					<select class="form-control" onchange="mpc.players[1].wave=getWave(this.value)">
+						<optgroup label="wave-default">
+							<option value="sine">sine</option>
+							<option value="square" selected>square</option>
+							<option value="sawtooth">sawtooth</option>
+							<option value="triangle">triangle</option>	
+						</optgroup>
+						<optgroup label="wave-custom" class="wave-custom">
+						</optgroup>
+					</select>
+					<select class="form-control" onchange="mpc.players[2].wave=getWave(this.value)">
+						<optgroup label="wave-default">
+							<option value="sine">sine</option>
+							<option value="square" selected>square</option>
+							<option value="sawtooth">sawtooth</option>
+							<option value="triangle">triangle</option>	
+						</optgroup>
+						<optgroup label="wave-custom" class="wave-custom">
+						</optgroup>
+					</select>
+					<select class="form-control" onchange="mpc.players[3].wave=getWave(this.value)">
+						<optgroup label="wave-default">
+							<option value="sine">sine</option>
+							<option value="square" selected>square</option>
+							<option value="sawtooth">sawtooth</option>
+							<option value="triangle">triangle</option>	
+						</optgroup>
+						<optgroup label="wave-custom" class="wave-custom">
+						</optgroup>
+					</select>
+					<select class="form-control" onchange="mpc.players[4].wave=getWave(this.value)">
+						<optgroup label="wave-default">
+							<option value="sine">sine</option>
+							<option value="square" selected>square</option>
+							<option value="sawtooth">sawtooth</option>
+							<option value="triangle">triangle</option>	
+						</optgroup>
+						<optgroup label="wave-custom" class="wave-custom">
+						</optgroup>
+					</select>
+					<select class="form-control" onchange="mpc.players[5].wave=getWave(this.value)">
+						<optgroup label="wave-default">
+							<option value="sine">sine</option>
+							<option value="square" selected>square</option>
+							<option value="sawtooth">sawtooth</option>
+							<option value="triangle">triangle</option>	
+						</optgroup>
+						<optgroup label="wave-custom" class="wave-custom">
+						</optgroup>
+					</select>
+				</div>
+				
+			</div>
+		</div>
+		
+		<hr>
+		<div>
+			<form action="#" onsubmit="playMml(this.mml.value);return false;">
+				<div class="input-group my-1">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">테스트코드</span>
+					</div>
+					<input class="form-control" type="text" name="mml" value="T100O7C1C2C3C4C5C6C7C8C9,T100O7A1A2A3A4A5A6A7A8A9">
+					<div class="input-group-append">
+						<button class="btn btn-success" type="submit">연주</button>	
+						<button class="btn btn-warning" type="button" onclick="stopMml()">정지</button>	
+					</div>
+				</div>
+			</form>
+			<form action="#" onsubmit="playMml(this.mml.value);return false;">
+				<div class="input-group my-1">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">테스트코드</span>
+					</div>
+					<input class="form-control" type="text" name="mml" value="T100CC-C+DD-D+EE-E+FF-F+GG-G+AA-A+BB-B+>CT200CC-C+DD-D+EE-E+FF-F+GG-G+AA-A+BB-B+>C">
+					<div class="input-group-append">
+						<button class="btn btn-success" type="submit">연주</button>	
+						<button class="btn btn-warning" type="button" onclick="stopMml()">정지</button>	
+					</div>
+				</div>
+			</form>
+			<form action="#" onsubmit="playMml(this.mml.value);return false;">
+				<div class="input-group my-1">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">학교종</span>
+					</div>
+					<input class="form-control" type="text" name="mml" value="G4G4A4A4G4G4E2.R4G4G4E4E4D2G4G4A4A4G4G4E2G4G4D4E4C2.R4">
+					<div class="input-group-append">
+						<button class="btn btn-success" type="submit">연주</button>	
+						<button class="btn btn-warning" type="button" onclick="stopMml()">정지</button>	
+					</div>
+				</div>
+			</form>
+			<form action="#" onsubmit="playMml(this.mml.value);return false;">
+				<div class="input-group my-1">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">느린학교종</span>
+					</div>
+					<input class="form-control" type="text" name="mml" value="T40G4G4A4A4G4G4E2.R4G4G4E4E4D2G4G4A4A4G4G4E2G4G4D4E4C2.R4">
+					<div class="input-group-append">
+						<button class="btn btn-success" type="submit">연주</button>	
+						<button class="btn btn-warning" type="button" onclick="stopMml()">정지</button>	
+					</div>
+				</div>
+			</form>
+			<form action="#" onsubmit="playMml(this.mml.value);return false;">
+				<div class="input-group my-1">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">빠른학교종</span>
+					</div>
+					<input class="form-control" type="text" name="mml" value="T240G4G4A4A4G4G4E2.R4G4G4E4E4D2G4G4A4A4G4G4E2G4G4D4E4C2.R4">
+					<div class="input-group-append">
+						<button class="btn btn-success" type="submit">연주</button>	
+						<button class="btn btn-warning" type="button" onclick="stopMml()">정지</button>	
+					</div>
+				</div>
+			</form>
+			<form action="#" onsubmit="playMml(this.mml.value);return false;">
+				<div class="input-group my-1">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">아리랑</span>
+					</div>
+					<input class="form-control" type="text" name="mml" value="MML@G4.A8G8A8O5C4.D8C8D8ED8E8C8O4A8G4.A8G8A8O5C4.D8C8D8E8D8C8O4A8G8A8O5C4.D8CC2.G2GGEDED8E8C8O4A8G4.A8G8A8O5C4.D8C8D8E8D8C8O4A8G8A8O5C4.D8CC2.,C8E8G8O4C8O3G8E8O2A8O3C8E8A8E8C8D8F#8A8O4D8O3A8F#8O2G8B8O3D8G8D8O2B8O3C8E8G8O4C8O3G8E8O2A8O3C8E8A8E8C8C8F8A8O4C8O3A8F8C8E8G8O4C8O3G8E8C8E8G8O4C8O3G8E8O2A8O3C8E8A8E8C8D8F#8A8O4D8O3A8F#8O2G8B8O3D8G8D8O2B8O3C8E8G8O4C8O3G8E8O2A8O3C8E8A8E8C8C8F8A8O4C8O3A,C8O2A8O3D8G8C8A8F8C8C8O2A8O3D8G8C8A8F8G8,;">
+					<div class="input-group-append">
+						<button class="btn btn-success" type="submit">연주</button>	
+						<button class="btn btn-warning" type="button" onclick="stopMml()">정지</button>	
+					</div>
+				</div>
+				<div class="mb-1">출처 : http://mabinogi.nexon.com/page/community/composer_view.asp?id=15503&category=0</div>
+			</form>
+			<form action="#" onsubmit="playMml(mml_startwars);return false;">
+				<div class="input-group my-1">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">스타워즈 - The Imperial March</span>
+					</div>
+					<input class="form-control" type="text" name="mml" value="" disabled>
+					<div class="input-group-append">
+						<button class="btn btn-success" type="submit">연주</button>	
+						<button class="btn btn-warning" type="button" onclick="stopMml()">정지</button>	
+					</div>
+				</div>
+				<div class="mb-1">출처 : http://mabinogi.nexon.com/page/community/composer_view.asp?id=30930&category=0</div>
+			</form>
+			<form action="#" onsubmit="playMml(mml_startwars_medley);return false;">
+				<div class="input-group my-1">
+					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">스타워즈 메들리</span>
+					</div>
+					<input class="form-control" type="text" name="mml" value="" disabled>
+					<div class="input-group-append">
+						<button class="btn btn-success" type="submit">연주</button>	
+						<button class="btn btn-warning" type="button" onclick="stopMml()">정지</button>	
+					</div>
+				</div>
+				<div class="mb-1">출처 : http://mabinogi.nexon.com/page/community/composer_view.asp?id=17981&category=0</div>
+			</form>
+			
+			
+		</div>
+		<hr>
+	</div>
+	<!-- 공대여자는 예쁘다. -->
+</body>
+</html>
