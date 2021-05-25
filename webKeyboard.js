@@ -247,23 +247,20 @@ const webKeyboard = (function(){
 		console.log('stopTone',osc.frequency.value,sec);
 	}
 	let playToneIdx = function(idx,wave,envelope){
-		return playTone(webKeyboard.noteTable[idx],wave,envelope);
+		let freq = webKeyboard.noteTable[idx];
+		if(isNaN(freq)){return;}
+		return playTone(freq,wave,envelope);
 	}
-	let playTone = function(code,wave,envelope) {
+	let playToneCode = function(code,wave,envelope){
+		let freq = webKeyboard.codeTable[code];
+		if(isNaN(freq)){return;}
+		return playTone(freq,wave,envelope);
+	}
+	let playTone = function(freq,wave,envelope) {
 		if(!audioCtx){
 			console.warn("start audio?");
 			return
 		}
-		// code와 freq 동시 지원
-		let freq = code;
-		if(isNaN(code)){
-			freq = webKeyboard.codeTable[code];
-			if(!freq){ return; }
-		}if(isNaN(code)){
-			freq = webKeyboard.codeTable[code];
-			if(!freq){ return; }
-		}
-
 		let localGain = audioCtx.createGain();
 		localGain.connect(gainNode);		
 		let osc = audioCtx.createOscillator();
@@ -277,7 +274,7 @@ const webKeyboard = (function(){
 		osc.frequency.value = freq;
 		osc.localGain = localGain;
 		osc.envelope = envelope;
-		osc.code = code;
+		
 		localGain.gain.value = 0;
 
 		osc.onended = function(event){
@@ -292,7 +289,7 @@ const webKeyboard = (function(){
 		}
 		envelopeCtrl.adsr(osc,envelope.attack,envelope.decay,envelope.sustain,envelope.release);
 		osc.start();
-		console.log('playTone',code,osc.frequency.value,osc.type,envelope);
+		console.log('playTone',osc.frequency.value,osc.type,envelope);
 		return osc;
 	}
 
@@ -309,12 +306,12 @@ const webKeyboard = (function(){
 		},
 		wave:'square',
 		init:function(){
-			
 			console.log("init");
 			initEvent();
 		},
 		playTone:playTone,
 		playToneIdx:playToneIdx,
+		playToneCode:playToneCode,
 		startAudio:startAudio,
 		setGainValue:setGainValue,
 		setWave:setWave,
