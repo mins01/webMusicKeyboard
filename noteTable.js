@@ -1,5 +1,5 @@
 //https://gist.githubusercontent.com/marcgg/94e97def0e8694f906443ed5262e9cbb/raw/a303dd6d5eafd155d988a629e88018bb95e10bed/notevalues.json
-const noteN = [
+const noteTable = [
     16.35, //[0] C0
     17.32, //[1] C#0
     18.35, //[2] D0

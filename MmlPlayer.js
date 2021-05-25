@@ -55,6 +55,7 @@ const MmlPlayer = (function(){
     load(cmds){
       let defCmd = {
         'org':'',
+        'N':-1,
         'semi':0,
         'key':'',
         // 'octave':4,
@@ -62,7 +63,6 @@ const MmlPlayer = (function(){
         'freq':0, //key+semi+O
         'length':-1,
         'sec':0,
-        'N':-1,
         'T':120,
         'V':8,
         'O':4,
@@ -104,7 +104,7 @@ const MmlPlayer = (function(){
         currCmd['key']=matches[1];
         currCmd['code']=currCmd['key']+currCmd['O']
         currCmd['N']=-1;
-        currCmd['freq'] = noteN[currCmd['N']]?noteN[currCmd['N']]:-1;
+        currCmd['freq'] = noteTable[currCmd['N']]?noteTable[currCmd['N']]:-1;
         currCmd['length']=parseInt(matches[3]!=''?matches[3]:preCmd['L']);
           switch(currCmd['length']){
             case 0: currCmd['sec'] = def_sec/8; break;
@@ -136,7 +136,7 @@ const MmlPlayer = (function(){
         currCmd['key']=matches[1];
         currCmd['code']=(semiCode)+currCmd['key']+currCmd['O']
         currCmd['N'] = this.codeToN(currCmd['semi'],currCmd['key'],currCmd['O']);
-        currCmd['freq'] = noteN[currCmd['N']]?noteN[currCmd['N']]:-1;
+        currCmd['freq'] = noteTable[currCmd['N']]?noteTable[currCmd['N']]:-1;
         currCmd['length']=parseInt(matches[3]!=''?matches[3]:preCmd['L']);
           switch(currCmd['length']){
             case 0: currCmd['sec'] = def_sec/8; break;

@@ -75,7 +75,9 @@ const webKeyboard = (function(){
 		// },500)
 		node.classList.add('on');
 		let code = node.dataset.key+node.dataset.half+node.dataset.tone;
-		node.osc = playTone(code,webKeyboard.wave,{...webKeyboard.envelope});
+		let idx = node.dataset.idx;
+		// node.osc = playTone(code,webKeyboard.wave,{...webKeyboard.envelope});
+		node.osc = playToneIdx(idx,webKeyboard.wave,{...webKeyboard.envelope});
 	}
 	let stopKey = function(node){
 		if(!node.classList.contains('kb-key')){
@@ -244,6 +246,9 @@ const webKeyboard = (function(){
 		envelopeCtrl.release(osc,sec);
 		console.log('stopTone',osc.frequency.value,sec);
 	}
+	let playToneIdx = function(idx,wave,envelope){
+		return playTone(webKeyboard.noteTable[idx],wave,envelope);
+	}
 	let playTone = function(code,wave,envelope) {
 		if(!audioCtx){
 			console.warn("start audio?");
@@ -252,6 +257,9 @@ const webKeyboard = (function(){
 		// code와 freq 동시 지원
 		let freq = code;
 		if(isNaN(code)){
+			freq = webKeyboard.codeTable[code];
+			if(!freq){ return; }
+		}if(isNaN(code)){
 			freq = webKeyboard.codeTable[code];
 			if(!freq){ return; }
 		}
@@ -289,8 +297,9 @@ const webKeyboard = (function(){
 	}
 
 	let webKeyboard = {
-		codeTable:[],
-		waveTables:[],
+		codeTable:null,
+		noteTable:null,
+		waveTables:null,
 		volume:0.5,
 		envelope:{
 			attack:0.01,
@@ -305,6 +314,7 @@ const webKeyboard = (function(){
 			initEvent();
 		},
 		playTone:playTone,
+		playToneIdx:playToneIdx,
 		startAudio:startAudio,
 		setGainValue:setGainValue,
 		setWave:setWave,
