@@ -181,11 +181,11 @@ const MmlPlayer = (function(){
       // 재생 쉼표
       console.log(cmd);
       if(cmd.freq!=-1){
-        webKeyboard.playTone(cmd.freq, 'square', {
+        this.playTone(cmd.freq, 'square', {
           attack:parseFloat(0),
           decay:parseFloat(0),
-          sustain:parseFloat(cmd['sec']-0.3),
-          release:parseFloat(0.3),
+          sustain:parseFloat(cmd['sec']*0.7),
+          release:parseFloat(cmd['sec']*0.3),
         });        
       }else{
         console.log('쉼',((cmd['sec']))*1000);
@@ -195,6 +195,9 @@ const MmlPlayer = (function(){
       setTimeout(function(){
         thisC.playPointer(pointer)
       },parseFloat((cmd['sec']))*1000)
+    }
+    playTone(code,wave,envelope){
+      webKeyboard.playTone(code,wave,envelope);      
     }
   };
 
