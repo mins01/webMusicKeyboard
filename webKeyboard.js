@@ -168,7 +168,7 @@ const webKeyboard = (function(){
 			},attack_sec*1000);
 		},
 		adsr:function(osc,attack_sec,decay_sec,sustain_sec,release_sec){
-			console.log('adsr',attack_sec,decay_sec,sustain_sec,release_sec);
+			// console.log('adsr',attack_sec,decay_sec,sustain_sec,release_sec);
 			this.attack(osc,attack_sec);
 			osc.timer_decay = setTimeout(()=>{
 				this.decay(osc,decay_sec)
@@ -183,7 +183,7 @@ const webKeyboard = (function(){
 		},
 		attack:function(osc,sec){
 			osc.envelope_status = 'attack';
-			console.log('adsr-attck',audioCtx.currentTime,sec,osc.localGain.gain.value);
+			// console.log('adsr-attck',audioCtx.currentTime,sec,osc.localGain.gain.value);
 			osc.localGain.gain.cancelScheduledValues(audioCtx.currentTime);
 			if(sec==0){
 				osc.localGain.gain.value = 1;
@@ -200,7 +200,7 @@ const webKeyboard = (function(){
 		decay:function(osc,sec){
 			if(osc.envelope_status!='attack'){return}
 			osc.envelope_status = 'decay';
-			console.log('adsr-decay',audioCtx.currentTime, sec,osc.localGain.gain.value);
+			// console.log('adsr-decay',audioCtx.currentTime, sec,osc.localGain.gain.value);
 			osc.localGain.gain.cancelScheduledValues(audioCtx.currentTime);
 			if(sec==0){
 				osc.localGain.gain.value = 0.8;
@@ -211,7 +211,8 @@ const webKeyboard = (function(){
 		},
 		sustain:function(osc,sec,release_sec){
 			osc.envelope_status = 'sustain';
-			console.log('adsr-sustain',audioCtx.currentTime,sec,release_sec,osc.localGain.gain.value);
+			// console.log('adsr-sustain',audioCtx.currentTime,sec,release_sec,osc.localGain.gain.value);
+			osc.localGain.gain.value = 0.8;
 			osc.timer_release = setTimeout(()=>{
 				this.release(osc,release_sec)
 			},sec*1000+1);
@@ -222,7 +223,7 @@ const webKeyboard = (function(){
 			if(osc.timer_sustain){clearTimeout(osc.timer_sustain);}
 			if(osc.timer_release){clearTimeout(osc.timer_release);}
 			if(!osc.localGain){return}
-			console.log('adsr-release',sec,osc.localGain.gain.value);
+			// console.log('adsr-release',sec,osc.localGain.gain.value);
 			osc.localGain.gain.cancelScheduledValues(audioCtx.currentTime);
 			if(sec==0){
 				osc.localGain.gain.value = 0;

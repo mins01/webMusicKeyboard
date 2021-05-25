@@ -48,7 +48,7 @@ const MmlPlayer = (function(){
       return n;
     }
     loadMml(mml){
-      let cmds = mml.match(/(([\+#\-]{0,1})[\<\>A-Z]\d{0,4})/g);
+      let cmds = mml.match(/([\<\>A-Za-z][\+#\-]{0,1}\d{0,4})/g);
       // console.log(cmds);
       this.load(cmds);
     }
@@ -74,14 +74,15 @@ const MmlPlayer = (function(){
         codeCmds[i] = this.convertCmd(cmds[i],preCmd);
         preCmd = codeCmds[i];
       }
-      console.log(codeCmds);
+      // console.log(codeCmds);
       this.codeCmds = codeCmds;
     }
     convertCmd(cmd,preCmd){
+      cmd = cmd.toUpperCase();
       let arg1 = cmd.replace(/[^<>TVOLNCDEFGABR]/,'');
       if(arg1.length==0){return false;}
       // let matches = cmd.trim().match(/[0-9]{1,4}$/g);
-      let matches = cmd.match(/([\+#-]{0,1})([<>A-Z])(\d{0,4})/);
+      let matches = cmd.match(/([<>A-Z])([\+#-]{0,1})(\d{0,4})/);
       // console.log(cmd,matches);
       let currCmd = { ...preCmd };
       currCmd['org'] = matches[0];
@@ -91,7 +92,7 @@ const MmlPlayer = (function(){
       currCmd['sec'] = -1;
       currCmd['code']='';
       let def_sec = 60/currCmd['T'] //4분음표의 연주 길이
-      switch(matches[2]){
+      switch(matches[1]){
         case 'T': currCmd['T']=parseInt(matches[3],10); break;
         case 'V': currCmd['V']=parseInt(matches[3],10); break;
         case 'O': currCmd['O']=parseInt(matches[3],10); break;
@@ -100,7 +101,7 @@ const MmlPlayer = (function(){
         case '<': currCmd['O']=Math.max(0,currCmd['O']-1); break;
         case '>': currCmd['O']=Math.min(8,currCmd['O']+1); break;
         case 'R':;
-        currCmd['key']=matches[2];
+        currCmd['key']=matches[1];
         currCmd['code']=currCmd['key']+currCmd['O']
         currCmd['N']=-1;
         currCmd['freq'] = noteN[currCmd['N']]?noteN[currCmd['N']]:-1;
@@ -126,13 +127,13 @@ const MmlPlayer = (function(){
         case 'A':;
         case 'B':;
         let semiCode = '';
-        switch(matches[1]){
+        switch(matches[2]){
           case '-':currCmd['semi']=-1;semiCode='-';break;
           case '+':;
           case '#':currCmd['semi']=1;semiCode='+';break;
           default:currCmd['semi']=0;break;
         }
-        currCmd['key']=matches[2];
+        currCmd['key']=matches[1];
         currCmd['code']=(semiCode)+currCmd['key']+currCmd['O']
         currCmd['N'] = this.codeToN(currCmd['semi'],currCmd['key'],currCmd['O']);
         currCmd['freq'] = noteN[currCmd['N']]?noteN[currCmd['N']]:-1;
@@ -183,8 +184,8 @@ const MmlPlayer = (function(){
         webKeyboard.playTone(cmd.freq, 'square', {
           attack:parseFloat(0),
           decay:parseFloat(0),
-          sustain:parseFloat(cmd['sec']-0.1),
-          release:parseFloat(0.1),
+          sustain:parseFloat(cmd['sec']-0.3),
+          release:parseFloat(0.3),
         });        
       }else{
         console.log('쉼',((cmd['sec']))*1000);
