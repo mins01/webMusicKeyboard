@@ -77,11 +77,13 @@ body {
 	pointer-events: all;
 	/* touch-action: none;  */
 }
+.kb-octave-normal  .kb-key[data-key="C"]::before{
+	/* content: attr(data-key)attr(data-half)attr(data-tone); */
+	content: attr(data-note);
+}
 .kb-key::before{
 	content: attr(data-key)attr(data-half);
-}
-.kb-key[data-key="C"]::before{
-	content: attr(data-key)attr(data-half)attr(data-tone);
+	/* content: attr(data-note); */
 }
 
 .kb-octave-normal .kb-pos{
@@ -116,11 +118,8 @@ body {
 	cursor: pointer;
 	
 }
-.kb-key-15 ,
-.kb-key-25 ,
-.kb-key-45 ,
-.kb-key-55 ,
-.kb-key-65 {
+.kb-key[data-half="#"] 
+{
 	flex: 2 1 0;
 	background-color:black;
 	color:#fff;
