@@ -199,7 +199,7 @@ const webKeyboard = (function(){
 			// console.log('adsr-decay',audioCtx.currentTime, sec,osc.localGain.gain.value);
 			osc.localGain.gain.cancelScheduledValues(audioCtx.currentTime);
 			if(sec==0){
-				osc.localGain.gain.value = 0.8*volume;
+				osc.localGain.gain.value = 0.9*volume;
 			}else{
 				osc.localGain.gain.setTargetAtTime(0.8, audioCtx.currentTime + sec, 0.001);
 			}
@@ -208,7 +208,7 @@ const webKeyboard = (function(){
 		sustain:function(osc,sec,release_sec,volume){
 			osc.envelope_status = 'sustain';
 			// console.log('adsr-sustain',audioCtx.currentTime,sec,release_sec,osc.localGain.gain.value);
-			osc.localGain.gain.value = 0.8*volume;
+			osc.localGain.gain.value = 0.9*volume;
 			osc.timer_release = setTimeout(()=>{
 				this.release(osc,release_sec)
 			},sec*1000+1);
