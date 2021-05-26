@@ -55,8 +55,8 @@ const MmlPlayer = (function(){
     loadMml(mml){
       mml = mml.replace(/^MML@/i,"");
       this.mml = mml;
-      let cmds = mml.match(/([\<\>A-Za-z][\+#\-]{0,1}\d{0,4}\.{0,})/g);
-      // console.log(mml,cmds);
+      let cmds = mml.match(/([<>A-Za-z&][\+#\-]{0,1}\d{0,4}\.{0,})/g);
+      // console.log('loadMml',mml,cmds);
       this.load(cmds);
     }
     load(cmds){
@@ -78,24 +78,42 @@ const MmlPlayer = (function(){
         'O':4,
         'L':4,
       };
-      let codeCmds = new Array(cmds.length)
+      let codeCmds = []
       let preCmd = defCmd;
       for(let i=0,m=cmds.length;i<m;i++){
         if(!cmds[i]){continue;}
-        codeCmds[i] = this.convertCmd(cmds[i],preCmd);
-        preCmd = codeCmds[i];
+        // console.log('load',cmds[i]);
+        preCmd = this.convertCmd(cmds[i],preCmd);
+        codeCmds.push(preCmd);
       }
       // console.log(codeCmds);
-      this.codeCmds = codeCmds;
+      this.codeCmds = this.mergeCodeCmds(codeCmds);
+    }
+    // 확장표기 &를 합치는 작업
+    mergeCodeCmds(codeCmds){
+      let rCodeCmds = [];
+      let codeCmd = null,lastCodeCmd = null;
+      for(let i=0,m=codeCmds.length;i<m;i++){
+        codeCmd = codeCmds[i];
+        if(codeCmd['org']=='&' && lastCodeCmd){ //이전 연주 부분과 시간을 합친다.
+          lastCodeCmd['org'] += '&'+codeCmds[i+1]['org'];
+          lastCodeCmd['sec'] += codeCmds[i+1]['sec'];
+          i++;
+        }else{
+          rCodeCmds.push(codeCmd);
+          lastCodeCmd = codeCmd;
+        }
+      }
+      return rCodeCmds;
     }
     convertCmd(cmd,preCmd){
       cmd = cmd.toUpperCase();
-      let arg1 = cmd.replace(/[^<>TVOLNCDEFGABR]/,'');
+      let arg1 = cmd.replace(/[^<>TVOLNCDEFGABR&]/,'');
       let currCmd = { ...preCmd };
       if(arg1.length==0){return currCmd;}
       // let matches = cmd.trim().match(/[0-9]{1,4}$/g);
-      let matches = cmd.match(/([<>A-Z])([\+#-]{0,1})(\d{0,4})(\.{0,})/);
-      // console.log(cmd,matches);
+      let matches = cmd.match(/([<>A-Z&])([\+#-]{0,1})(\d{0,4})(\.{0,})/);
+      // console.log('convertCmd',cmd,matches);
       currCmd['org'] = matches[0];
       currCmd['semi'] = 0;
       currCmd['length'] = -1;
@@ -112,6 +130,11 @@ const MmlPlayer = (function(){
         case 'L': if(matches[3] != '') currCmd['L']=parseInt(matches[3],10); break;
         case '<': if(matches[3] != '') currCmd['O']=Math.max(0,currCmd['O']-(matches[3]==""?1:parseInt(matches[3]))); break;
         case '>': if(matches[3] != '') currCmd['O']=Math.min(8,currCmd['O']+(matches[3]==""?1:parseInt(matches[3]))); break;
+        case '&':;
+        currCmd['key']=matches[1];
+        currCmd['code']=currCmd['key']+currCmd['O']
+        currCmd['N']=-1;
+        break;
         case 'P':;
         case 'R':;
         currCmd['key']=matches[1];
@@ -155,7 +178,7 @@ const MmlPlayer = (function(){
       return currCmd;
     }
     play(){
-      console.log(this.codeCmds);
+      // console.log(this.codeCmds);
       console.log('player',this.name,'start play');
       this.endedMml = "";
       let pointer = 0;
