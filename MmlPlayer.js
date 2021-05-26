@@ -33,6 +33,7 @@ const MmlPlayer = (function(){
       this.name='';
       this.playCmds = null;
       this.mml = "";
+      this.endedMml = "";
       this.tm = null;
       this.wave = 'square';
     }
@@ -52,6 +53,7 @@ const MmlPlayer = (function(){
       return n;
     }
     loadMml(mml){
+      mml = mml.replace(/^MML@/i,"");
       this.mml = mml;
       let cmds = mml.match(/([\<\>A-Za-z][\+#\-]{0,1}\d{0,4}\.{0,})/g);
       // console.log(mml,cmds);
@@ -65,13 +67,12 @@ const MmlPlayer = (function(){
         'org':'',
         'N':-1,
         'sec':0,
-        'semi':0,
-        'key':'',
-        // 'octave':4,
-        'code':'',//key+semi+O
-        'freq':0, //key+semi+O
-        'length':-1,
-        'dotted':0,
+        'semi':0, //참고값, 실사용은 안함
+        'key':'', //참고값, 실사용은 안함
+        'code':'',//key+semi+O  //참고값, 실사용은 안함
+        'freq':0, //
+        'length':-1, //참고값, 실사용은 안함
+        'dotted':0, //참고값, 실사용은 안함
         'T':120,
         'V':8,
         'O':4,
@@ -99,7 +100,7 @@ const MmlPlayer = (function(){
       currCmd['semi'] = 0;
       currCmd['length'] = -1;
       currCmd['freq'] = -1;
-      currCmd['sec'] = -1;
+      currCmd['sec'] = 0;
       currCmd['code']='';
       currCmd['dotted']=matches[4].length;
       let t;
@@ -109,7 +110,6 @@ const MmlPlayer = (function(){
         case 'V': if(matches[3] != '') currCmd['V']=parseInt(matches[3],10); break;
         case 'O': if(matches[3] != '') currCmd['O']=parseInt(matches[3],10); break;
         case 'L': if(matches[3] != '') currCmd['L']=parseInt(matches[3],10); break;
-        case 'N': if(matches[3] != '') currCmd['T']=parseInt(matches[3],10); break;
         case '<': if(matches[3] != '') currCmd['O']=Math.max(0,currCmd['O']-(matches[3]==""?1:parseInt(matches[3]))); break;
         case '>': if(matches[3] != '') currCmd['O']=Math.min(8,currCmd['O']+(matches[3]==""?1:parseInt(matches[3]))); break;
         case 'P':;
@@ -119,6 +119,14 @@ const MmlPlayer = (function(){
         currCmd['N']=-1;
         currCmd['freq'] = noteTable[currCmd['N']]?noteTable[currCmd['N']]:-1;
         currCmd['length']=parseInt(matches[3]!=''?matches[3]:preCmd['L']);
+        currCmd['sec'] = def_sec/currCmd['length']*Math.pow(1.5,currCmd['dotted']);
+        break;
+        case 'N': 
+        currCmd['key']='N';
+        currCmd['code']=currCmd['key'];
+        currCmd['N']=parseInt(matches[3],10); 
+        currCmd['freq'] = noteTable[currCmd['N']]?noteTable[currCmd['N']]:-1;
+        currCmd['length']=preCmd['L'];
         currCmd['sec'] = def_sec/currCmd['length']*Math.pow(1.5,currCmd['dotted']);
         break;
         case 'C':;
@@ -136,7 +144,7 @@ const MmlPlayer = (function(){
           default:currCmd['semi']=0;break;
         }
         currCmd['key']=matches[1];
-        currCmd['code']=(semiCode)+currCmd['key']+currCmd['O']
+        currCmd['code']=currCmd['key']+(semiCode)+currCmd['O']
         currCmd['N'] = this.codeToN(currCmd['semi'],currCmd['key'],currCmd['O']);
         currCmd['freq'] = noteTable[currCmd['N']]?noteTable[currCmd['N']]:-1;
         currCmd['length']=parseInt(matches[3]!=''?matches[3]:preCmd['L']);
@@ -148,7 +156,8 @@ const MmlPlayer = (function(){
     }
     play(){
       console.log(this.codeCmds);
-      console.log('재생');
+      console.log('player',this.name,'start play');
+      this.endedMml = "";
       let pointer = 0;
       let codeCmds = this.codeCmds;
       this.playPointer(0);
@@ -166,17 +175,24 @@ const MmlPlayer = (function(){
         return false;
       }
       let cmd = this.codeCmds[pointer];
-      // console.log(cmd);
-      while(this.codeCmds.length > pointer && cmd['sec']==-1){
-        // console.log(cmd);
-        pointer++; //다음
-        cmd = this.codeCmds[pointer];
-      }
-      if(!this.codeCmds[pointer]){
-        console.log('END');
+      if(!cmd){
+        console.log('player',this.name,'end play');
         return 
       }
-      cmd = this.codeCmds[pointer];
+      this.endedMml+=cmd.org;
+      // console.log(cmd);
+      while(this.codeCmds.length > pointer && cmd['sec']<=0){
+        // console.log(cmd);
+        console.log('player',this.name,cmd);
+        pointer++; //다음
+        cmd = this.codeCmds[pointer];
+        if(!cmd){
+          console.log('player',this.name,'end play');
+          return 
+        }
+        this.endedMml+=cmd.org;
+      }
+
       if(cmd.freq!=-1){
         console.log('player',this.name,cmd);
         this.playTone(cmd.freq, this.wave, {
@@ -187,7 +203,7 @@ const MmlPlayer = (function(){
         },cmd.V/15);
       }else{
         // 재생 쉼표
-        console.log('player',this.name,'rest',((cmd['sec']))*1000);
+        console.log('player',this.name,'rest',cmd);
       }
       pointer++;
       let thisC = this;
