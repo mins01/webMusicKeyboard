@@ -2,7 +2,7 @@
 	"name": "web music keyboard ",
 	"short_name": "keyboard",
 	"start_url": "./keyboard.html",
-	"scope": "./",
+	"scope": ".",
 	"display": "fullscreen",
 	"orientation": "",
 	"background_color": "#fff",
