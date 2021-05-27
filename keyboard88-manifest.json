@@ -2,7 +2,7 @@
 	"name": "web music keyboard 88",
 	"short_name": "keyboard88",
 	"start_url": "./keyboard88.html",
-	"scope": "./",
+	"scope": ".",
 	"display": "fullscreen",
 	"orientation": "landscape-primary",
 	"background_color": "#fff",

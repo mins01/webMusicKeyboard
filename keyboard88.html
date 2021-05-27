@@ -7,22 +7,23 @@
 	<meta http-equiv="Content-Style-Type" content="text/css">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<link rel="shortcut icon" href="https://mins01.github.io/web_work_doc/favicon.ico">	
+	<!-- <link rel="shortcut icon" href="https://mins01.github.io/web_work_doc/favicon.ico">	 -->
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 	<link rel="manifest" href="keyboard88-manifest.json">
 	
-	<script src="/js/ForGoogle.js"></script>
+	<!-- <script src="/js/ForGoogle.js"></script> -->
 	<!-- google analytics -->
-	<script>ForGoogle.analytics()</script>
+	<!-- <script>ForGoogle.analytics()</script> -->
 	
 	
 	<!-- jquery 관련 -->
-	<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"  ></script>
+	<!-- <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"  ></script> -->
 	
 	<!-- 부트스트랩 4 : IE8지원안됨! -->
+	<!-- <link rel="stylesheet" href="modules/bootstrap/bootstrap.min.css">  -->
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" crossorigin="anonymous"> 
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script> 
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" crossorigin="anonymous"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" crossorigin="anonymous"></script>  -->
+	<!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" crossorigin="anonymous"></script> -->
 	<!-- vue.js -->
 	<!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
 	
@@ -47,6 +48,24 @@
 	
 	<script src="webKeyboard.js"></script>
 	<script>
+
+		// PWA 설치 이벤트 처리
+		let deferredPrompt;
+		window.addEventListener('beforeinstallprompt', (e) => {
+			e.preventDefault();
+			deferredPrompt = e;
+			console.log(`'beforeinstallprompt' event was fired.`);
+		});
+
+		// 서비스 워커 등록
+		if (navigator.serviceWorker) {
+			navigator.serviceWorker.register('keyboard88-sw.js').then(function(registration) {
+				console.log('ServiceWorker registration successful with scope:',  registration.scope);
+			}).catch(function(error) {
+				console.log('ServiceWorker registration failed:', error);
+			});
+		}
+
 		window.onload = function(){
 			webKeyboard.codeTable = noteValues; 
 			webKeyboard.noteTable = noteTable; 
