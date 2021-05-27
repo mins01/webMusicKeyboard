@@ -3,16 +3,20 @@ const cacheName = 'cache-v20210527';
 // List the files to precache
 const precacheResources = [
   'keyboard.html',
+  'keyboard88.html',
   // 'modules/bootstrap/bootstrap.min.css',
   'https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css',
   'keyboard-core.css',
   'keyboard.css',
+  'keyboard88.css',
   'noteTable.js',
   'noteValues.js',
   'waveTables.js',
   'webKeyboard.js',
   'keyboard-manifest.json',
+  'keyboard88-manifest.json',
   'webMusicKeyboard.png',
+  'https://mins01.github.io/web_work_doc/favicon.ico',
 ];
 
 // When the service worker is installing, open the cache and add the precache resources to it
