@@ -12,20 +12,6 @@ CDEFGAB : 도~ 시
 R    : 쉼표
 T120 L4 V8 O4  :초기값
  */
-/*
-The sound length
-Value	Length
-0	1/32
-1	1/16
-2	dotted 1/16
-3	1/8
-4	dotted 1/8
-5	1/4
-6	dotted 1/4
-7	1/2
-8	dotted 1/2
-9	1
-*/
 const MmlPlayerControl = (function(){
   let defmml ="T120L4V8O4";
   class MmlPlayerControl {
