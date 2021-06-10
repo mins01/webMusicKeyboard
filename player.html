@@ -196,6 +196,18 @@
 			<form action="#" onsubmit="playMml(this.mml.value);return false;">
 				<div class="input-group my-1">
 					<div class="input-group-prepend">
+						<span class="input-group-text" id="basic-addon1">테스트코드2</span>
+					</div>
+					<input class="form-control" type="text" name="mml" value="T100C&C&C">
+					<div class="input-group-append">
+						<button class="btn btn-success" type="submit">연주</button>	
+						<button class="btn btn-warning" type="button" onclick="stopMml()">정지</button>	
+					</div>
+				</div>
+			</form>
+			<form action="#" onsubmit="playMml(this.mml.value);return false;">
+				<div class="input-group my-1">
+					<div class="input-group-prepend">
 						<span class="input-group-text" id="basic-addon1">테스트코드</span>
 					</div>
 					<input class="form-control" type="text" name="mml" value="T100CC-C+DD-D+EE-E+FF-F+GG-G+AA-A+BB-B+>CT200CC-C+DD-D+EE-E+FF-F+GG-G+AA-A+BB-B+>C">

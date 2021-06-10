@@ -13,7 +13,7 @@
 	
 	<script src="/js/ForGoogle.js"></script>
 	<!-- google analytics -->
-	<script>ForGoogle.analytics()</script>
+	<script>if(window.ForGoogle) ForGoogle.analytics()</script>
 	
 	
 	<!-- jquery 관련 -->
@@ -49,6 +49,23 @@
 	
 	<script src="webKeyboard.js"></script>
 	<script>
+		// PWA 설치 이벤트 처리
+		let deferredPrompt;
+		window.addEventListener('beforeinstallprompt', (e) => {
+			e.preventDefault();
+			deferredPrompt = e;
+			console.log(`'beforeinstallprompt' event was fired.`);
+		});
+
+		// 서비스 워커 등록
+		if (navigator.serviceWorker) {
+			navigator.serviceWorker.register('keyboard-sw.js').then(function(registration) {
+				console.log('ServiceWorker registration successful with scope:',  registration.scope);
+			}).catch(function(error) {
+				console.log('ServiceWorker registration failed:', error);
+			});
+		}
+
 		window.onload = function(){
 			webKeyboard.codeTable = noteValues; 
 			webKeyboard.noteTable = noteTable; 
@@ -155,6 +172,14 @@
 							<option value="3.0">3.0</option>
 							<option value="5.0">5.0</option>
 							<option value="7.0">7.0</option>
+						</optgroup>
+					</select>
+
+					<select class="form-control form-control-sm btn-parwnt-width" onchange="window.location.replace(this.value)" style="padding:0; background-color: #abc;;">
+						<optgroup label="change">
+							<option value="">change keyboard</option>
+							<option value="keyboard.html">keyboard.html</option>
+							<option value="keyboard88.html">keyboard88.html</option>
 						</optgroup>
 					</select>
 				</form>

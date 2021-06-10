@@ -2,19 +2,56 @@
 	"name": "web music keyboard ",
 	"short_name": "keyboard",
 	"start_url": "./keyboard.html",
-	"scope": "./",
+	"scope": ".",
 	"display": "fullscreen",
 	"orientation": "",
 	"background_color": "#fff",
 	"description": "A simply web music keyboard.",
-	"icons": [{
-	  "src": "webMusicKeyboard.png",
-	  "sizes": "192x192",
-	  "type": "image/png",
-		"purpose":"any"
-	}],
-	"related_applications": [{
-	  "platform": "github",
-	  "url": "https://mins01.github.io/webMusicKeyboard/keyboard.html"
-	}]
-  }
+	"icons": [
+		{
+			"src": "webMusicKeyboard.png",
+			"sizes": "192x192",
+			"type": "image/png",
+			"purpose":"any"
+		}
+	],
+	"related_applications": [
+		{
+			"platform": "github",
+			"url": "https://mins01.github.io/webMusicKeyboard/keyboard.html"
+		},
+		{
+			"platform": "github",
+			"url": "https://mins01.github.io/webMusicKeyboard/keyboard88.html"
+		}
+	],
+	"shortcuts": [
+		{
+			"name": "web music keyboard ",
+			"short_name": "keyboard",
+			"url": "./keyboard.html",
+			"icons": [
+				{
+					"src": "webMusicKeyboard.png",
+					"sizes": "192x192",
+					"type": "image/png",
+					"purpose":"any"
+				}
+			]
+		},
+		{
+			"name": "web music keyboard 88",
+			"short_name": "keyboard88",
+			"url": "./keyboard88.html",
+			"icons": [
+				{
+					"src": "webMusicKeyboard88.png",
+					"sizes": "192x192",
+					"type": "image/png",
+					"purpose":"any"
+				}
+			]
+		}
+		
+	]
+}
